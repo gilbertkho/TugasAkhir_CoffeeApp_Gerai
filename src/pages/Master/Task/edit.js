@@ -179,9 +179,9 @@ export default function AdminReqEditForm(props) {
     }).catch(error => {
       if(error.response.status != 500){
         toast.error(error.response.data.msg, {containerId:'B', transition: Zoom});
-      }        
+      }
       else{
-        toast.error(Errormsg['500'], {containerId: 'B', transition: Zoom});        
+        toast.error(Errormsg['500'], {containerId: 'B', transition: Zoom});
       }
     })
   }
@@ -271,34 +271,6 @@ export default function AdminReqEditForm(props) {
     setToDelete(!toDelete);
     setSelectedReq(reqmajor)
   };
-
-  const GetActionFormat = (cell, row) => {   
-    return (
-      <div>        
-        <Button color="primary" className="mr-2" size="sm" onClick={(e) => { e.stopPropagation(); toggleAdd(row) }}>
-          <FontAwesomeIcon icon={['fa', 'edit']} />
-        </Button>
-        <Button color="danger" className="mr-2" size="sm"         
-          onClick={(e) => {
-            e.stopPropagation();            
-            toggleDelete(row)
-          }}>
-          <FontAwesomeIcon icon={['fa', 'trash-alt']} />
-        </Button>        
-      </div>
-    );    
-  }
-
-  const innerColumns = [
-    {
-      dataField: 'categoryname',
-      text: 'Nama Kategori',
-    },
-    {
-      dataField: 'countquestion',
-      text: 'Jumlah Soal',      
-    },    
-  ];
 
   const addCommas = num => num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
   

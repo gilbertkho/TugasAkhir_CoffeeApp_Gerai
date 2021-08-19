@@ -175,8 +175,8 @@ const SidebarMenu = (props) => {
               <>
               <li>
                 <a
-                  href = '#'
-                  onClick={() => {updateOpenMerchant();}}
+                  href = '#'                  
+                  onClick={(e) => {updateOpenMerchant();}}
                   className={clsx({ active: masterOpen })}>
                   <span className="sidebar-icon">
                     <Home/>

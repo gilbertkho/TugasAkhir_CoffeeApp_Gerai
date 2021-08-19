@@ -4,7 +4,7 @@ import { useHistory } from 'react-router-dom';
 import {
   Card, CardTitle, CardBody, Button, Modal, ModalHeader,
   ModalBody, ModalFooter, Row, Col, Label, Input, 
-  Breadcrumb, BreadcrumbItem, CustomInput
+  Breadcrumb, BreadcrumbItem, CustomInput, Toast
 } from 'reactstrap';
 import InfiniteScroll from 'react-infinite-scroll-component';
 import BootstrapTable from 'react-bootstrap-table-next';
@@ -16,6 +16,8 @@ import { toast, Zoom } from 'react-toastify';
 import moment from "moment";
 import localForage from 'config/localForage';
 import Errormsg from 'config/errormsg';
+import { setFooterBgTransparent } from 'redux/reducers/ThemeOptions';
+import getApiKey from 'config/getApiKey';
 
 export default function ChatList(props) {
   const [user, setUser] = useState({
@@ -24,11 +26,9 @@ export default function ChatList(props) {
     tu: "Internal",
     uid: ""
   });
-  let [totalSize, setTotal] = useState(0);
-  let [page, setPage] = useState(1);
-  const sizePerPage = 10;
-  const [hasMore,setHasMore] = useState(true);
-  const [perPage,setPerPage] = useState(20);
+  const [apikey, setApikey] = useState('');
+  const [openMerchant, setOpenMerchant] = useState(false);
+
   useEffect(() => {
     (async function () {
       let user = await localForage.getItem('user');
@@ -38,80 +38,112 @@ export default function ChatList(props) {
   }, []);
 
   const history = useHistory();
-  const [req, setReq] = useState([{
-    day : 'monday',
-    open : '',
-    close : '',
-  },{
-    day : 'tuesday',
-    open : '',
-    close : '',
-  },{
-    day : 'wednesday',
-    open : '',
-    close : '',
-  },{
-    day : 'thursday',
-    open : '',
-    close : '',
-  },{
-    day : 'friday',
-    open : '',
-    close : '',
-  },{
-    day : 'saturday',
-    open : '',
-    close : '',
-  },{
-    day : 'sunday',
-    open : '',
-    close : '',
-  },]);
-
-  const toChat = (req) => history.push('/chat', { req: req, admin: user.tu === "Administrator" });
+  const [req, setReq] = useState([]);
 
   const [modal, setModal] = useState(false);
   const [selectedReq, setSelectedReq] = useState({});
   const [sort, setSort] = useState(false);
   const toggle = (req) => { 
     setModal(!modal);
-    setSelectedReq(req)
-    console.log(req.id)    
+    setSelectedReq(req);
+    console.log(req.id);
   };
 
-  useEffect(()=>{
-    if( selectedReq.id ) {
-      axios.post("/b/o/exam/score/detail",{
-        "page":1,
-        "count":100,
-        "id":selectedReq.id
-      }).then(({data}) => {
-        console.log(data)
-      }).catch(error => {
-        toast.error(Errormsg['500'], {containerId:"B", transition:Zoom});
-      })
+  useEffect(() => {
+    getApiKey().then((key) => {
+      if(key.status){
+        setApikey(key.key);
+      }
+    });
+  },[])
+
+  useEffect(() => {
+    if(apikey !== ''){      
+      fetchData();
+      getMerchantOpenStatus();
     }
-  },[selectedReq])
+  },[apikey]);
 
   function fetchData() {
-    axios.get('app/gerai/openhour') .then(({data}) => {
-      console.log(data)
-      if (data.status) {
-        console.log(data)        
-        setReq(data.data)        
-      } else {
-        toast.error(data.msg, { containerId: 'B', transition: Zoom });
+    setReq([{
+      day : 'Monday',
+      open : '',
+      close : '',
+    },{
+      day : 'Tuesday',
+      open : '',
+      close : '',
+    },{
+      day : 'Wednesday',
+      open : '',
+      close : '',
+    },{
+      day : 'Thursday',
+      open : '',
+      close : '',
+    },{
+      day : 'Friday',
+      open : '',
+      close : '',
+    },{
+      day : 'Saturday',
+      open : '',
+      close : '',
+    },{
+      day : 'Sunday',
+      open : '',
+      close : '',
+    },])
+    axios.post('app/gerai/openhour',{
+      apikey: apikey
+    }).then(({data}) => {
+      if(data.status){
+        setReq(JSON.parse(data.data.waktu));
       }
-    }).catch(error => {
-      if(error.response){
-        if(error.response.status != 500){
-          toast.error(error.response.data.msg, {containerId:'B', transition: Zoom});
-        }
+      else{        
+        toast.error(data.msg, {containerId: "B", transition: Zoom})
+      }
+    }).catch((error) => {    
+      if(error.response.status != 500){
+        toast.error(error.response.data.msg, {containerId:'B', transition: Zoom});
       }
       else{
-        toast.error(Errormsg['500'], {containerId: 'B', transition: Zoom});        
+        toast.error(Errormsg['500'], {containerId: 'B', transition: Zoom});
       }
     })
+  }
+
+  useEffect(() => {
+    console.log(req)
+  },[req])
+
+  const setValue = (info, row, val) => {
+    console.log(req[0].open)
+    let find = req.findIndex((rq) => {
+      return rq.day === row.day
+    });
+    let rq = [...req];
+    console.log('ini rq', rq);
+    console.log('ini req', req);
+    console.log(find)
+    if(info === 'close'){
+      rq[find].close = val;
+    }
+    else{
+      rq[find].open = val;
+    }
+    setReq(rq);
+  }
+
+  const openFormat = (cell, row) => {    
+    return (
+      <Input value={row.open} id={row.day + 'open'} type='time' onChange={(e) => setValue('open', row, e.target.value)}/>
+    )
+  }
+  const closeFormat = (cell, row) => {    
+    return(
+      <Input value={row.close} id={row.day + 'close'} type='time' onChange={(e) => setValue('close', row, e.target.value)}/>
+    )
   }
 
   const columns = [{     
@@ -120,15 +152,94 @@ export default function ChatList(props) {
   }, {
     dataField: 'open',
     text: 'Buka',
+    formatter: openFormat
   }, {
     dataField: 'close',
     text: 'Tutup',
+    formatter: closeFormat
   }];
 
+  const saveOpenHour = () => {
+    console.log('SAVE')
+    axios.post('/app/gerai/openhour/save',{
+      openhour: JSON.stringify(req),
+      apikey: apikey
+    }).then(({data}) => {
+      if(data.status){
+        toast.success(data.msg, {containerId:'B', transition:Zoom});
+        fetchData();
+      }
+      else{
+        toast.error(data.msg, {transition:Zoom, containerId:'B'});
+      }
+    }).catch((error) => {
+      if(error.response.status != 500){
+        toast.error(error.response.data.msg, {containerId:'B', transition: Zoom});
+      }
+      else{
+        toast.error(Errormsg['500'], {containerId: 'B', transition: Zoom});
+      }
+    })
+  }
+
+  const getMerchantOpenStatus = () => {
+    axios.post('/app/gerai/profile',{
+      apikey: apikey
+    }).then(({data}) => {
+      if(data.status){
+        if(data.data.gerai_buka === 'TRUE'){
+          setOpenMerchant(true);
+        }
+        else{
+          setOpenMerchant(false)
+        }
+      }
+      else{
+        toast.error(data.msg, {containerId:'B', transition:Zoom});
+      }
+    }).catch((error) => {
+      if(error.response.status != 500){
+        toast.error(error.response.data.msg, {containerId:'B', transition: Zoom});
+      }
+      else{
+        toast.error(Errormsg['500'], {containerId: 'B', transition: Zoom});
+      }
+    })
+  }
+
+  const updateOpenMerchant = () => {
+    axios.post('/app/gerai/openmerchant',{
+      apikey: apikey
+    }).then((data) => {
+      console.log(data);
+      if(data.status){
+        console.log(data.data)
+        if(data.data === 'FALSE'){
+          setOpenMerchant(false);
+        }
+        else{
+          setOpenMerchant(true);
+        }
+        window.location.reload();
+      }
+      else{
+        toast.error(data.msg, { containerId:'B', transition: Zoom });
+      }
+    })
+    .catch((error) => {
+      if(error.response.status != 500){
+        toast.error(error.response.data.msg, {containerId:'B', transition: Zoom});
+      }
+      else{
+        toast.error(Errormsg['500'], {containerId: 'B', transition: Zoom});
+      }
+    })
+  } 
+
   return (
-    <>      
-      <Card style= {{height:'90vh'}}>
-        <CardBody>          
+    <>
+      <Card>
+        <CardBody>
           <CardTitle>Jam Operasi</CardTitle>          
           <BootstrapTable
             remote
@@ -141,6 +252,15 @@ export default function ChatList(props) {
             noDataIndication="Belum ada jam operasi"
             wrapperClasses="table-responsive"
           />
+          <div className='d-flex flex-row justify-content-center'>
+            <Button color='primary' className ='w-25' onClick = {saveOpenHour}>Simpan Jam Operasi</Button>
+            <div className='pl-2 w-25'>
+              <Button color='primary' className = 'w-100'  onClick = {() => updateOpenMerchant()}>                
+                  <FontAwesomeIcon icon='circle' color={openMerchant ? '#39ff2f' : 'red'} className='pr-1'/>                
+                  {openMerchant ? 'Tutup Gerai' : 'Buka Gerai'}                
+              </Button>
+            </div>
+          </div>
         </CardBody>
       </Card>
     </>
