@@ -109,9 +109,10 @@ export default function ListPendaftar() {
     return(
       <>
         {row.status_pesanan === 'DIPROSES' ? 
-          <p className = 'text-warning m-0 font-weight-bold'>{row.status_pesanan}</p> 
-          :
-          <p className = 'text-success m-0 font-weight-bold'>{row.status_pesanan}</p> 
+            <p className = 'text-warning m-0 font-weight-bold'>{row.status_pesanan}</p> 
+          : row.status_pesanan === 'SELESAI' ?        
+            <p className = 'text-success m-0 font-weight-bold'>{row.status_pesanan}</p> 
+          : <p className = 'text-info m-0 font-weight-bold'>{row.status_pesanan}</p>
         } 
       </>
     )

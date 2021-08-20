@@ -3,7 +3,7 @@ import React, { useState, useEffect } from 'react';
 
 import clsx from 'clsx';
 
-import { Collapse, Alert } from 'reactstrap';
+import { Collapse, Alert, Button} from 'reactstrap';
 
 import PerfectScrollbar from 'react-perfect-scrollbar';
 import { connect } from 'react-redux';
@@ -131,6 +131,7 @@ const SidebarMenu = (props) => {
         else{
           setOpenMerchant(true);
         }
+        window.location.reload();
       }
       else{
         toast.error(data.msg, { containerId:'B', transition: Zoom });
@@ -175,8 +176,8 @@ const SidebarMenu = (props) => {
               <>
               <li>
                 <a
-                  href = '#'                  
-                  onClick={(e) => {updateOpenMerchant();}}
+                  style = {{cursor:'pointer'}}
+                  onClick={() => {updateOpenMerchant();}}
                   className={clsx({ active: masterOpen })}>
                   <span className="sidebar-icon">
                     <Home/>

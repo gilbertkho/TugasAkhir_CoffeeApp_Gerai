@@ -4,7 +4,7 @@ import { useHistory } from 'react-router-dom';
 import {
   Card, CardTitle, CardBody, Button, Modal, ModalHeader,
   ModalBody, ModalFooter, Row, Col, Label, Input, 
-  Breadcrumb, BreadcrumbItem, CustomInput, Toast
+  Breadcrumb, BreadcrumbItem, CustomInput, Toast, FormText
 } from 'reactstrap';
 import InfiniteScroll from 'react-infinite-scroll-component';
 import BootstrapTable from 'react-bootstrap-table-next';
@@ -64,36 +64,7 @@ export default function ChatList(props) {
     }
   },[apikey]);
 
-  function fetchData() {
-    setReq([{
-      day : 'Monday',
-      open : '',
-      close : '',
-    },{
-      day : 'Tuesday',
-      open : '',
-      close : '',
-    },{
-      day : 'Wednesday',
-      open : '',
-      close : '',
-    },{
-      day : 'Thursday',
-      open : '',
-      close : '',
-    },{
-      day : 'Friday',
-      open : '',
-      close : '',
-    },{
-      day : 'Saturday',
-      open : '',
-      close : '',
-    },{
-      day : 'Sunday',
-      open : '',
-      close : '',
-    },])
+  function fetchData() {    
     axios.post('app/gerai/openhour',{
       apikey: apikey
     }).then(({data}) => {
@@ -102,8 +73,66 @@ export default function ChatList(props) {
       }
       else{        
         toast.error(data.msg, {containerId: "B", transition: Zoom})
+        setReq([{
+          day : 'Monday',
+          open : '',
+          close : '',
+        },{
+          day : 'Tuesday',
+          open : '',
+          close : '',
+        },{
+          day : 'Wednesday',
+          open : '',
+          close : '',
+        },{
+          day : 'Thursday',
+          open : '',
+          close : '',
+        },{
+          day : 'Friday',
+          open : '',
+          close : '',
+        },{
+          day : 'Saturday',
+          open : '',
+          close : '',
+        },{
+          day : 'Sunday',
+          open : '',
+          close : '',
+        },])
       }
     }).catch((error) => {    
+      setReq([{
+        day : 'Monday',
+        open : '',
+        close : '',
+      },{
+        day : 'Tuesday',
+        open : '',
+        close : '',
+      },{
+        day : 'Wednesday',
+        open : '',
+        close : '',
+      },{
+        day : 'Thursday',
+        open : '',
+        close : '',
+      },{
+        day : 'Friday',
+        open : '',
+        close : '',
+      },{
+        day : 'Saturday',
+        open : '',
+        close : '',
+      },{
+        day : 'Sunday',
+        open : '',
+        close : '',
+      },])
       if(error.response.status != 500){
         toast.error(error.response.data.msg, {containerId:'B', transition: Zoom});
       }
@@ -118,7 +147,7 @@ export default function ChatList(props) {
   },[req])
 
   const setValue = (info, row, val) => {
-    console.log(req[0].open)
+    // console.log(req[0].open)
     let find = req.findIndex((rq) => {
       return rq.day === row.day
     });
@@ -160,26 +189,37 @@ export default function ChatList(props) {
   }];
 
   const saveOpenHour = () => {
-    console.log('SAVE')
-    axios.post('/app/gerai/openhour/save',{
-      openhour: JSON.stringify(req),
-      apikey: apikey
-    }).then(({data}) => {
-      if(data.status){
-        toast.success(data.msg, {containerId:'B', transition:Zoom});
-        fetchData();
+    let checkOpen =  false;
+    for(let i = 0; i < req.length; i++){
+      if(!req[i].open ||!req[i].close){
+        checkOpen = true;
+        i =  req.length;
       }
-      else{
-        toast.error(data.msg, {transition:Zoom, containerId:'B'});
-      }
-    }).catch((error) => {
-      if(error.response.status != 500){
-        toast.error(error.response.data.msg, {containerId:'B', transition: Zoom});
-      }
-      else{
-        toast.error(Errormsg['500'], {containerId: 'B', transition: Zoom});
-      }
-    })
+    }
+    if(checkOpen){
+      toast.error('Harap lengkapi semua pengisian jam operasi.', {containerId:'B', transition:Zoom});
+    }
+    else{
+      axios.post('/app/gerai/openhour/save',{
+        openhour: JSON.stringify(req),
+        apikey: apikey
+      }).then(({data}) => {
+        if(data.status){
+          toast.success(data.msg, {containerId:'B', transition:Zoom});
+          fetchData();
+        }
+        else{
+          toast.error(data.msg, {transition:Zoom, containerId:'B'});
+        }
+      }).catch((error) => {
+        if(error.response.status != 500){
+          toast.error(error.response.data.msg, {containerId:'B', transition: Zoom});
+        }
+        else{
+          toast.error(Errormsg['500'], {containerId: 'B', transition: Zoom});
+        }
+      })
+    }
   }
 
   const getMerchantOpenStatus = () => {
@@ -207,7 +247,7 @@ export default function ChatList(props) {
     })
   }
 
-  const updateOpenMerchant = () => {
+  const updateOpenMerchant = () => {    
     axios.post('/app/gerai/openmerchant',{
       apikey: apikey
     }).then((data) => {
@@ -240,7 +280,8 @@ export default function ChatList(props) {
     <>
       <Card>
         <CardBody>
-          <CardTitle>Jam Operasi</CardTitle>          
+          <CardTitle>Jam Operasi</CardTitle>
+          <FormText color='primary' className='pb-2'>Harap mengisi jam operasi dengan format waktu 24 jam (00:00 - 23:59)</FormText>
           <BootstrapTable
             remote
             keyField='day'
@@ -257,7 +298,7 @@ export default function ChatList(props) {
             <div className='pl-2 w-25'>
               <Button color='primary' className = 'w-100'  onClick = {() => updateOpenMerchant()}>                
                   <FontAwesomeIcon icon='circle' color={openMerchant ? '#39ff2f' : 'red'} className='pr-1'/>                
-                  {openMerchant ? 'Tutup Gerai' : 'Buka Gerai'}                
+                  {openMerchant ? 'Tutup Gerai' : 'Buka Gerai'}
               </Button>
             </div>
           </div>
