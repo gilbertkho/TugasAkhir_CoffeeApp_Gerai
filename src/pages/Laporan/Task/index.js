@@ -36,14 +36,6 @@ export default function ListLaporanTask() {
     apikey: apikey,
   });
 
-  const [toDelete, setToDelete] = useState(false);
-  const [selected, setSelected] = useState({});
-  const [period, setPeriod] = useState([]);
-  const toggleDelete = (user) => {
-    setToDelete(!toDelete);
-    setSelectedUser(user)
-  };
-
   const toEditUser = (user) => history.push('/master/task/edit', { user: user });
 
   const [modal, setModal] = useState(false);
@@ -149,19 +141,6 @@ export default function ListLaporanTask() {
     formatter: statusFormat,    
   }];
 
-  const selectRow = {
-    mode: 'checkbox',
-    clickToSelect: true,
-    hideSelectAll: true,
-    selectColumnStyle: { width: 40 },
-    onSelect: (row, isSelect, rowIndex, e) => {
-      // console.log(row.id);
-      // console.log(isSelect);
-      // console.log(rowIndex);
-      // console.log(e);
-    },
-  };
-
   useEffect(() => {
     getApiKey().then((key) => {
       if(key.status){
@@ -176,8 +155,8 @@ export default function ListLaporanTask() {
     axios.post('/app/gerai/task', param).then(({data}) => {
         console.log(data.data)
         if (data.status) {
-          setTotal(data.total)
-          setUsers(data.data)
+          setTotal(parseInt(data.total));
+          setUsers(data.data);
         } else {
           toast.error(data.msg, { containerId: 'B', transition: Zoom });
         }
@@ -290,7 +269,7 @@ export default function ListLaporanTask() {
                 <Label for = "time_end">Tanggal Berakhir</Label>
                 <Input id = "time_end" type="date" value = {timeEnd} onChange = {(e) => setTimeFilter(e,"te")}/>
               </div>
-            </div>          
+            </div>
             <Button onClick={handleSearch} color="primary" className="mt-2">
               <FontAwesomeIcon icon={['fas', 'search']} />
               <span style={{ marginLeft: 10 }}>

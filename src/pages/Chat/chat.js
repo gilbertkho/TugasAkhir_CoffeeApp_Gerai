@@ -219,7 +219,7 @@ export default function Chat(props) {
       <Card style= {{height:'90vh'}}>
         {/* <Text></Text> */}
         <CardTitle className = 'text-center m-2 bg-secondary p-2 rounded'>{req.nama}</CardTitle>
-        <CardTitle className = 'text-center m-2 bg-secondary p-2 rounded'>{socketId}</CardTitle>
+        {/* <CardTitle className = 'text-center m-2 bg-secondary p-2 rounded'>{socketId}</CardTitle> */}
         <CardBody>
             <GiftedChat
               className = 'bg-dark'

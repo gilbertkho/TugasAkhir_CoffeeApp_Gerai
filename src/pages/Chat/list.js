@@ -45,7 +45,7 @@ export default function ChatList(props) {
   const [req, setReq] = useState([]);
   const sizePerPage = 100;
 
-  const toChat = (req) => history.push('/chat', { req: req, admin: user.tu === "Administrator" });
+  const toChat = (req) => history.push('/chat', { req: req });
 
   const [modal, setModal] = useState(false);
   const [selectedReq, setSelectedReq] = useState({});

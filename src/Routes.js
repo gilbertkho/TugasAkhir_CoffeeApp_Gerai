@@ -1,3 +1,4 @@
+/* eslint-disable */
 import React, { lazy, Suspense, useState, useEffect, useCallback } from 'react';
 import { Switch, Route, Redirect, useLocation } from 'react-router-dom';
 import { AnimatePresence, motion } from 'framer-motion';
@@ -23,38 +24,9 @@ import Errormsg from 'config/errormsg';
 import checkStatus from 'config/checkStatus';
 
 const DashboardStatistics = lazy(() => import('./pages/DashboardStatistics'));
-const PageLoginPsikotes = lazy(() => import('./pages/PagePsikotesLogin'));
 const PageLoginBasic = lazy(() => import('./pages/PageLoginBasic'));
 const PageRegister = lazy(() => import('./components/PageRegister'))
 const PageRecoverBasic = lazy(() => import('./pages/PageRecoverBasic'));
-const UserList = lazy(() => import('./pages/Master/User'));
-const UserEdit = lazy(() => import('./pages/Master/User/edit'));
-const UserPsikotesList = lazy(() => import('./pages/MasterPsikotes/UserPsikotes'));
-const UserPsikotesEdit = lazy(() => import('./pages/MasterPsikotes/UserPsikotes/edit'));
-const AspekPsikotes = lazy(() => import('./pages/MasterPsikotes/Aspek'));
-const AspekPsikotesEdit = lazy(() => import('./pages/MasterPsikotes/Aspek/edit'));
-const Period = lazy(() => import('./pages/Master/PeriodRegister'));
-const PeriodCreate = lazy(() => import('./pages/Master/PeriodRegister/create'));
-const PeriodEdit = lazy(() => import('./pages/Master/PeriodRegister/edit'));
-const File = lazy(() => import('./pages/Master/FileDownload'));
-const FileCreate = lazy(() => import('./pages/Master/FileDownload/create'));
-const FileEdit = lazy(() => import('./pages/Master/FileDownload/edit'));
-const Pendaftaran = lazy(() => import('./pages/Master/Pendaftaran'));
-const PendaftaranEdit = lazy(() => import('./pages/Master/Pendaftaran/edit'));
-const Pendaftar = lazy(() => import('./pages/Master/Pendaftar'));
-const PendaftarEdit = lazy(() => import('./pages/Master/Pendaftar/edit'));
-const School = lazy(() => import('./pages/Master/School'));
-const SchoolEdit = lazy(() => import('./pages/Master/School/edit'));
-const SchoolCreate = lazy(() => import('./pages/Master/School/create'));
-const SchoolImport = lazy(() => import('./pages/Master/School/importExcel'));
-const SyaratAdmin = lazy(() => import('./pages/Master/SyaratAdmin'));
-const SyaratAdminEdit = lazy(() => import('./pages/Master/SyaratAdmin/edit'));
-const Tahap2 = lazy(() => import('./pages/Tahap2'));
-const Tahap2Edit = lazy(() => import('./pages/Tahap2/edit'));
-const Tahap2Req = lazy(() => import('./pages/Tahap2/requirement'));
-const Tahap4 = lazy(() => import('./pages/Tahap4'));
-const Tahap4Edit = lazy(() => import('./pages/Tahap4/edit'));
-const Tahap4Req = lazy(() => import('./pages/Tahap4/requirement'));
 const Profile = lazy(() => import('./pages/Profile'));
 const OrderList = lazy(() => import('./pages/Order'));
 const OrderEdit = lazy(() => import('./pages/Order/edit'));
@@ -74,37 +46,13 @@ const LaporanMenuList = lazy(() => import('./pages/Laporan/Menu/index'));
 const LaporanMenu = lazy(() => import('./pages/Laporan/Menu/Menu'));
 const LaporanTaskList = lazy(() => import('./pages/Laporan/Task/index'));
 const LaporanTask = lazy(() => import('./pages/Laporan/Task/Task'));
+const LaporanIncome = lazy(() => import('./pages/Laporan/Income/index'));
+const LaporanKomplain = lazy(() => import('./pages/Laporan/Komplain/index'));
 const ChatList = lazy(() => import('./pages/Chat/list'));
 const Chat= lazy(() => import('./pages/Chat/chat'));
 const OpenHour = lazy(() => import('./pages/OpenHour/index'));
 const Rating = lazy(() => import('./pages/Rating/rating'));
-const KategoriUjian = lazy(() =>
-  import('./pages/MasterUjian/KategoriUjian/index')
-);
-const KategoriUjianEdit = lazy(() =>
-  import('./pages/MasterUjian/KategoriUjian/edit')
-);
-const Ujian = lazy(() => import('./pages/MasterUjian/index'));
-const UjianEdit = lazy(() => import('./pages/MasterUjian/edit'));
-const SoalUjian = lazy(() => import('./pages/MasterUjian/SoalUjian/index'));
-const SoalUjianEdit = lazy(() => import('./pages/MasterUjian/SoalUjian/edit'));
-const Timeline = lazy(() => import('./pages/Static/Timeline'));
-const Tatib = lazy(() => import('./pages/Static/TataTertibUjian'));
-const AlamatDokumen = lazy(() => import('./pages/Static/AlamatDokumen'));
-const EditJawaban = lazy(() => import('./pages/MasterUjian/SoalUjian/editjawaban'));
-const EditJurusan = lazy(() => import('./pages/MasterUjian/editjurusan'));
-const Psikotes = lazy(() => import('./pages/Psikotes/index'));
-// const PsikotesEdit = lazy(() => import('./pages/Psikotes/edit'));
-// const PsikotesCreate = lazy(() => import('./pages/Psikotes/create'));
-const PsikotesImport = lazy(() => import('./pages/Psikotes/importExcel'));
-const PsikotesExport = lazy(() => import('./pages/Psikotes/exportExcel'));
-const HasilUjian =  lazy(() => import('./pages/MasterUjian/HasilUjian'));
-const DetailUjian =  lazy(() => import('./pages/MasterUjian/HasilUjian/detail'));
-const FotoUjian =  lazy(() => import('./pages/MasterUjian/FotoUjian'));
-// const JurusanUjian = lazy(()=> import('./pages/MasterUjian/JurusanUjian/index'));
-// const JurusanUjianEdit = lazy(()=> import('./pages/MasterUjian/JurusanUjian/edit'));
-// const JawabanUjian = lazy(()=> import('./pages/Master/Ujian/JawabanUjian/index'));
-// const JawabanUjianEdit = lazy(()=> import('./pages/Master/Ujian/JawabanUjian/edit'));
+
 const Routes = (props) => {
   const { setProfilePicture } = props;
   const location = useLocation();
@@ -350,6 +298,20 @@ const Routes = (props) => {
                       roles={["Internal", "Administrator"]}
                       path="/laporan/task"
                       component={LaporanTask}
+                    />
+                    <PrivateRoute
+                      user={user}
+                      exact
+                      roles={["Internal", "Administrator"]}
+                      path="/laporan/income"
+                      component={LaporanIncome}
+                    />
+                    <PrivateRoute
+                      user={user}
+                      exact
+                      roles={["Internal", "Administrator"]}
+                      path="/laporan/complain"
+                      component={LaporanKomplain}
                     />
                     <PrivateRoute
                       user={user}

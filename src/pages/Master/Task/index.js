@@ -99,7 +99,7 @@ export default function ListPendaftar() {
     let date = new Date(row.time_start);    
     return(
       <>
-        {date.getDate()+ " " + date.toLocaleDateString('default',{month:'long'}) +" "+ date.getFullYear()}
+        {moment(row.time_start).format('DD MMMM YYYY')}
       </>
     )
   }
@@ -108,7 +108,7 @@ export default function ListPendaftar() {
     let date = new Date(row.time_end);    
     return(
       <>
-        {date.getDate()+ " " + date.toLocaleDateString('default',{month:'long'}) +" "+ date.getFullYear()}
+        {moment(row.time_end).format('DD MMMM YYYY')}
       </>
     )
   }
@@ -181,8 +181,8 @@ export default function ListPendaftar() {
     axios.post('/app/gerai/task', param).then(({data}) => {
         console.log(data.data)
         if (data.status) {
-          setTotal(data.total)
-          setUsers(data.data)
+          setTotal(parseInt(data.total));
+          setUsers(data.data);
         } else {
           toast.error(data.msg, { containerId: 'B', transition: Zoom });
         }
@@ -292,11 +292,11 @@ export default function ListPendaftar() {
           </Row>
           <Row>
             <Col xs={4}>Tanggal Berlaku</Col>
-            <Col xs={8}>{": " + moment(selectedUser.time_start).format('DD-MM-YYYY')}</Col>
+            <Col xs={8}>{": " + moment(selectedUser.time_start).format('DD MMMM YYYY')}</Col>
           </Row>
           <Row>
             <Col xs={4}>Tanggal Berakhir</Col>
-            <Col xs={8}>{": " + moment(selectedUser.time_end).format('DD-MM-YYYY')}</Col>
+            <Col xs={8}>{": " + moment(selectedUser.time_end).format('DD MMMM YYYY')}</Col>
           </Row>
           <Row>
             <Col xs={4}>Status</Col>
@@ -321,11 +321,11 @@ export default function ListPendaftar() {
           </Row>
           <Row>
             <Col xs={4}>Tanggal Berlaku</Col>
-            <Col xs={8}>{": " + moment(selectedUser.time_start).format('DD-MM-YYYY')}</Col>
+            <Col xs={8}>{": " + moment(selectedUser.time_start).format('DD MMMM YYYY')}</Col>
           </Row>
           <Row>
             <Col xs={4}>Tanggal Berakhir</Col>
-            <Col xs={8}>{": " + moment(selectedUser.time_end).format('DD-MM-YYYY')}</Col>
+            <Col xs={8}>{": " + moment(selectedUser.time_end).format('DD MMMM YYYY')}</Col>
           </Row>
           <Row>
             <Col xs={4}>Status</Col>

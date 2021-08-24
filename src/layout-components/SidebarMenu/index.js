@@ -322,6 +322,20 @@ const SidebarMenu = (props) => {
                         Task
                       </NavLink>
                     </li>
+                    <li>
+                      <NavLink
+                        onClick={toggleSidebarMobile}
+                        to="/laporan/income">
+                        Income
+                      </NavLink>
+                    </li>
+                    <li>
+                      <NavLink
+                        onClick={toggleSidebarMobile}
+                        to="/laporan/complain">
+                        Complain
+                      </NavLink>
+                    </li>
                   </ul>
                 </Collapse>
               </li>

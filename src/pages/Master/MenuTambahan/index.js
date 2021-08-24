@@ -110,8 +110,8 @@ export default function ListPendaftar() {
     axios.post('/app/gerai/menu_tambahan', param).then(({data}) => {
         console.log(data.data)
         if (data.status) {
-          setTotal(data.total)
-          setUsers(data.data)
+          setTotal(parseInt(data.total));
+          setUsers(data.data);
         } else {
           toast.error(data.msg, { containerId: 'B', transition: Zoom });
         }

@@ -135,26 +135,13 @@ export default function ListMenu() {
     formatter: statusFormat
   }];
 
-  const selectRow = {
-    mode: 'checkbox',
-    clickToSelect: true,
-    hideSelectAll: true,
-    selectColumnStyle: { width: 40 },
-    onSelect: (row, isSelect, rowIndex, e) => {
-      // console.log(row.id);
-      // console.log(isSelect);
-      // console.log(rowIndex);
-      // console.log(e);
-    },
-  };
-
   function fetchData(param) { 
     console.log(param)
     axios.post('/app/gerai/menu', param).then(({data}) => {
         console.log(data)
         if (data.status) {
-          setTotal(data.total)
-          setUsers(data.data)
+          setTotal(parseInt(data.total));
+          setUsers(data.data);
         } else {
           toast.error(data.msg, { containerId: 'B', transition: Zoom });
         }
@@ -165,21 +152,6 @@ export default function ListMenu() {
         else{
           toast.error(Errormsg['500'], {containerId: 'B', transition: Zoom});        
         }
-      })
-  }
-
-  function getDetailRegister(id) {
-    toast.dismiss();
-    axios.post('/b/o/master/registered/period', JSON.stringify({ id: id })).then(res => res.data)
-      .then(data => {
-        // console.log("period", data);
-        setPeriod(data.data);
-      }).catch(error => {
-        // if (!error.response) {
-        //   alert(error)
-        //   return
-        // }
-        toast.error(Errormsg['500'], { containerId: 'B', transition: Zoom });
       })
   }
 

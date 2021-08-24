@@ -4,7 +4,7 @@ import React, { Fragment, useState, useEffect, useRef } from 'react';
 import { useHistory } from 'react-router-dom';
 import {
   Card, CardTitle, CardBody, Button, Modal, ModalHeader,
-  ModalBody, ModalFooter, Row, Col, Label, Input, Table
+  ModalBody, ModalFooter, Row, Col, Label, Input, Table, FormText
 } from 'reactstrap';
 import BootstrapTable from 'react-bootstrap-table-next';
 import paginationFactory from 'react-bootstrap-table2-paginator';
@@ -16,7 +16,7 @@ import { toast, Zoom } from 'react-toastify';
 import Errormsg from 'config/errormsg';
 import getApiKey from 'config/getApiKey';
 
-export default function ListPendaftar() {
+export default function ListMenu() {
 
   const history = useHistory();
   const [users, setUsers] = useState([]);
@@ -31,16 +31,21 @@ export default function ListPendaftar() {
     search: '',
     apikey: apikey
   });
-
+  const [timeStart, setTimeStart] = useState('');
+  const [timeEnd, setTimeEnd] = useState('');
   const [toDelete, setToDelete] = useState(false);
   const [selected, setSelected] = useState({});
   const [period, setPeriod] = useState([]);
+  const [income, setIncome] = useState({
+    clean: 0,
+    gross: 0
+  });
   const toggleDelete = (user) => {
     setToDelete(!toDelete);
     setSelectedUser(user)
   };
 
-  const toEditUser = (user) => history.push('/order/edit', { user: user });
+  const toEditUser = (user) => history.push('/master/menu/edit', { user: user });
 
   const [modal, setModal] = useState(false);
   const [selectedUser, setSelectedUser] = useState({});
@@ -53,14 +58,14 @@ export default function ListPendaftar() {
   useEffect(() => {
     getApiKey().then((key) => {
       if(key.status){
-        setApikey(key.key)
-        setParam({...param, apikey:key.key})
+        setApikey(key.key);
+        setParam({...param, apikey: key.key})
       }
-    });
+    })
   },[])
 
   const addCommas = (num) => {
-    return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+    return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")
   };
   
   const removeNonNumeric = num => num.toString().replace(/[^0-9]/g, "");
@@ -71,13 +76,7 @@ export default function ListPendaftar() {
       <div>
         <Button color="primary" className="mr-2" size="sm" onClick={(e) => { e.stopPropagation(); toggleEdit(row) }}>
           <FontAwesomeIcon icon={['fa', 'info-circle']} />
-        </Button>
-        <Button color="primary" className="mr-2" size="sm" onClick={(e) => { e.stopPropagation(); toEditUser(row) }}>
-          <FontAwesomeIcon icon={['fa', 'edit']} />
-        </Button>
-        {/* <Button color="danger" className="mr-2" size="sm" onClick={(e) => { e.stopPropagation(); toggleDelete(row) }}>
-          <FontAwesomeIcon icon={['fa', 'trash-alt']} />
-        </Button> */}
+        </Button>        
       </div>
     );
   }
@@ -89,12 +88,12 @@ export default function ListPendaftar() {
       )
     }    
   }
-
+  
   const timeFormat = (cell,row) =>{
     let date = new Date(row.tgl_pesanan);    
     return(
       <>
-        {moment(row.tgl_pesanan).format('DD MMM YYYY, H:mm')}
+        {date.getDate()+ " " + date.toLocaleDateString('default',{month:'long'}) +" "+ date.getFullYear() + " " + row.waktu_pesanan.substring(row.waktu_pesanan.length - 5, row.waktu_pesanan.length)}
       </>
     )
   }
@@ -117,7 +116,7 @@ export default function ListPendaftar() {
     text: 'Action',
     formatter: GetActionFormat,
     headerStyle: (column, colIndex) => {
-      return { width: '180px' };
+      return { width: '100px' };
     }
   }
   , {
@@ -152,46 +151,6 @@ export default function ListPendaftar() {
       // console.log(e);
     },
   };
-
-  function fetchData(param) { 
-    console.log(param)
-    axios.post('/app/gerai/order', param).then(({data}) => {
-        console.log(data)
-        if (data.status) {
-          setTotal(parseInt(data.total))
-          setUsers(data.data)          
-        } else {
-          toast.error(data.msg, { containerId: 'B', transition: Zoom });
-        }
-      }).catch(error => {
-        console.log(error.response)
-        if(error.response.status != 500){
-          toast.error(error.response.data.msg, {containerId:'B', transition: Zoom});
-        }        
-        else{
-          toast.error(Errormsg['500'], {containerId: 'B', transition: Zoom});        
-        }
-      })
-  }
-
-  useEffect(() => {
-    console.log(param)
-    if(param.apikey !== ''){
-      fetchData(param)
-    }
-  }, [param]);
-
-  const handleTableChange = (type, { page, sizePerPage }) => {
-    setParam((prevState) => ({
-      ...prevState,
-      page: page
-    }))
-  }
-
-  const handleSearch = (e) => {
-    e.preventDefault()
-    setParam((prevState) => ({ ...prevState, page: 1, search: searchRef.current.value }))
-  }
 
   const innerColumns = [
     {
@@ -229,6 +188,65 @@ export default function ListPendaftar() {
     }
   };
 
+  function fetchData(param) { 
+    console.log(param)
+    axios.post('/app/gerai/report/income', param).then(({data}) => {      
+        if (data.status) {
+          setTotal(parseInt(data.total));
+          setUsers(data.data);
+          setIncome({...income, clean: data.income.clean, gross: data.income.gross});
+        } else {
+          toast.error(data.msg, { containerId: 'B', transition: Zoom });
+        }
+      }).catch(error => {
+        if(error.response.status != 500){
+          toast.error(error.response.data.msg, {containerId:'B', transition: Zoom});
+        }        
+        else{
+          toast.error(Errormsg['500'], {containerId: 'B', transition: Zoom});        
+        }
+      })
+  }
+
+  useEffect(() => {
+    if(param.apikey !== ''){
+      fetchData(param)
+    }
+  }, [param]);
+
+  const handleTableChange = (type, { page, sizePerPage }) => {
+    setParam((prevState) => ({
+      ...prevState,
+      page: page
+    }))
+  }
+
+  const handleSearch = (e) => {
+    e.preventDefault()
+    if(Date.parse(timeStart) >  Date.parse(timeEnd)){
+      toast.error('Tanggal berlaku tidak boleh melebihi tanggal berakhir', { containerId: 'B', transition: Zoom });
+    }
+    else{
+      setParam((prevState) => ({ ...prevState, page: 1, time_start: timeStart, time_end: timeEnd}))
+    }
+  }
+
+  const setTimeFilter = (e,val) => {
+    if(val === "ts"){
+      setTimeStart(e.target.value)
+    }
+    else{
+      setTimeEnd(e.target.value)
+    }
+    console.log(e.target.value)
+  }
+
+  const clearSearch = () => {
+    setTimeStart('')
+    setTimeEnd('')
+    setParam((prevState) => ({ ...prevState, page: 1, time_start: '', time_end: '' }))
+  }
+
   return (
     <>
       <Modal zIndex={2000} centered isOpen={modal} toggle={toggle}>
@@ -244,7 +262,7 @@ export default function ListPendaftar() {
           </Row>
           <Row>
             <Col xs={4}>Tanggal Pesanan</Col>
-            <Col xs={8}>{": " + moment(selectedUser.tgl_pesanan).format('DD MMMM YYYY, H:mm')}</Col>
+            <Col xs={8}>{": " + moment(selectedUser.tgl_pesanan).format('DD-MM-YYYY')}</Col>
           </Row>
           <Row>
             <Col xs={4}>Jumlah Pesanan</Col>
@@ -339,17 +357,42 @@ export default function ListPendaftar() {
       </Modal>
       <Card>
         <CardBody>
-          <CardTitle>Daftar Pemesanan</CardTitle>
-          {/* <Button color = "primary" onClick = {() => {history.push('menu/edit')} }>+ Tambah Menu</Button> */}
+          <CardTitle>Laporan Income / Pemasukkan</CardTitle>
           <div className="my-2">
-            <Label>Search</Label>
-            <Input className="m-0" type="search" placeholder="ID Pesanan, Nama Pelanggan" innerRef={searchRef} />
-            <Button onClick={handleSearch} color="primary" className="mt-2">
-              <FontAwesomeIcon icon={['fas', 'search']} />
-              <span style={{ marginLeft: 10 }}>
-                Cari
-              </span>
-            </Button>
+            <div className = "d-flex w-100">
+              <div className = "w-50">
+                <Label for = "time_start">Tanggal Berlaku</Label>
+                <Input id = "time_start" type="date" value = {timeStart} onChange = {(e) => setTimeFilter(e,"ts")}/>
+              </div>
+              <div className = "w-50 pl-3">
+                <Label for = "time_end">Tanggal Berakhir</Label>
+                <Input id = "time_end" type="date" value = {timeEnd} onChange = {(e) => setTimeFilter(e,"te")}/>
+              </div>
+            </div>
+            <FormText color='primary'>Data akan ditampilkan secara default dengan jangka waktu selama 1 minggu terakhir, jika tidak ada pengaturan jangka waktu laporan</FormText>
+              <Button onClick={handleSearch} color="primary" className="mt-2">
+                <FontAwesomeIcon icon={['fas', 'search']} />
+                <span style={{ marginLeft: 10 }}>
+                  Cari
+                </span>
+              </Button>
+              {
+                timeStart !== '' || timeEnd !== '' ? 
+                <Button onClick={clearSearch} color="info" className="mt-2 ml-2">
+                  <FontAwesomeIcon icon={['fas', 'trash-alt']} />
+                  <span style={{ marginLeft: 10 }}>
+                    Clear
+                  </span>
+                </Button>
+                : null
+              }
+          </div>
+          <div className = 'rounded bg-secondary mb-2 px-3 py-2 font-weight-bold'>
+            Pemasukkan Kotor: <br/>
+            <h5>{'Rp. ' + addCommas(income.gross)}</h5>            
+            <hr/>
+            Pemasukkan Bersih: <br/>
+            <h5>{'Rp. ' + addCommas(income.clean)}</h5>
           </div>
           <BootstrapTable
             remote
@@ -367,7 +410,7 @@ export default function ListPendaftar() {
             })}
             expandRow = {expandRow}
             onTableChange={handleTableChange}
-            noDataIndication="Belum ada pesanan"
+            noDataIndication="Belum ada menu"
             wrapperClasses="table-responsive"
           />
         </CardBody>

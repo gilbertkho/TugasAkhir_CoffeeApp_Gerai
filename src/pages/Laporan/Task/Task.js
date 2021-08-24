@@ -179,7 +179,7 @@ export default function LaporanTask(props) {
             <BreadcrumbItem active>Laporan Task</BreadcrumbItem>
           </Breadcrumb>
           <Breadcrumb class='p-0'>            
-            <h6 class='m-0 p-0'>{param.nama_reward + ' - ' + addCommas(param.level_task)}</h6>
+            <h6 class='m-0 p-0 font-weight-bold'>{param.nama_reward + ' - ' + addCommas(param.level_task)}</h6>
           </Breadcrumb>          
         </CardBody>
         {chartOptions.xaxis.categories.length > 0 ?

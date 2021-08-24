@@ -32,10 +32,6 @@ export default function ListLaporanMenu() {
     apikey: apikey
   });
 
-  const [toDelete, setToDelete] = useState(false);
-  const [selected, setSelected] = useState({});
-  const [period, setPeriod] = useState([]);
-
   const toEditUser = (user) => history.push('/master/menu/edit', { user: user });
 
   const [modal, setModal] = useState(false);
@@ -101,7 +97,7 @@ export default function ListLaporanMenu() {
   
   const getPhotoFormat = (cell,row) =>{    
     return (
-      <img class="mx-auto d-block" height="150" width="150" src={urlConfig.urlBackend + "app/gerai/menu_photo/" + row.id_menu + "/" + apikey }/>
+      <img className="mx-auto d-block" height="150" width="150" src={urlConfig.urlBackend + "app/gerai/menu_photo/" + row.id_menu + "/" + apikey }/>
     )
   }
 
@@ -132,26 +128,13 @@ export default function ListLaporanMenu() {
     formatter: statusFormat
   }];
 
-  const selectRow = {
-    mode: 'checkbox',
-    clickToSelect: true,
-    hideSelectAll: true,
-    selectColumnStyle: { width: 40 },
-    onSelect: (row, isSelect, rowIndex, e) => {
-      // console.log(row.id);
-      // console.log(isSelect);
-      // console.log(rowIndex);
-      // console.log(e);
-    },
-  };
-
   function fetchData(param) { 
     console.log(param)
     axios.post('/app/gerai/menu', param).then(({data}) => {
         console.log(data)
         if (data.status) {
-          setTotal(data.total)
-          setUsers(data.data)
+          setTotal(parseInt(data.total));
+          setUsers(data.data);
         } else {
           toast.error(data.msg, { containerId: 'B', transition: Zoom });
         }
@@ -162,21 +145,6 @@ export default function ListLaporanMenu() {
         else{
           toast.error(Errormsg['500'], {containerId: 'B', transition: Zoom});        
         }
-      })
-  }
-
-  function getDetailRegister(id) {
-    toast.dismiss();
-    axios.post('/b/o/master/registered/period', JSON.stringify({ id: id })).then(res => res.data)
-      .then(data => {
-        // console.log("period", data);
-        setPeriod(data.data);
-      }).catch(error => {
-        // if (!error.response) {
-        //   alert(error)
-        //   return
-        // }
-        toast.error(Errormsg['500'], { containerId: 'B', transition: Zoom });
       })
   }
 

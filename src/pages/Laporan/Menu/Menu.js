@@ -190,7 +190,7 @@ export default function LaporanMenu(props) {
             <BreadcrumbItem active>Laporan Menu</BreadcrumbItem>
           </Breadcrumb>
           <Breadcrumb class='p-0'>            
-            <h6 class='m-0 p-0'>{param.nama_menu + ' - Rp.' + addCommas(param.harga_menu)}</h6>
+            <h6 class='m-0 p-0 font-weight-bold'>{param.nama_menu + ' - Rp.' + addCommas(param.harga_menu)}</h6>
           </Breadcrumb>
           <div className="my-2">
             {/* <Label>Search</Label>

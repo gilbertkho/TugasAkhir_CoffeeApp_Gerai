@@ -31,7 +31,7 @@ export default function ListPendaftar() {
     search: '',
     apikey: apikey
   });
-
+  
   const [toDelete, setToDelete] = useState(false);
   const [selected, setSelected] = useState({});
   const [period, setPeriod] = useState([]);
@@ -41,6 +41,7 @@ export default function ListPendaftar() {
   };
 
   const toEditUser = (user) => history.push('/order/edit', { user: user });
+  const toChat = (req) => history.push('/chat', { req: req });
 
   const [modal, setModal] = useState(false);
   const [selectedUser, setSelectedUser] = useState({});
@@ -72,12 +73,9 @@ export default function ListPendaftar() {
         <Button color="primary" className="mr-2" size="sm" onClick={(e) => { e.stopPropagation(); toggleEdit(row) }}>
           <FontAwesomeIcon icon={['fa', 'info-circle']} />
         </Button>
-        <Button color="primary" className="mr-2" size="sm" onClick={(e) => { e.stopPropagation(); toEditUser(row) }}>
-          <FontAwesomeIcon icon={['fa', 'edit']} />
+        <Button color="primary" className="mr-2" size="sm" onClick={(e) => { e.stopPropagation(); toChat(row,{}) }}>
+          <FontAwesomeIcon icon={['fa', 'comment-alt']} />
         </Button>
-        {/* <Button color="danger" className="mr-2" size="sm" onClick={(e) => { e.stopPropagation(); toggleDelete(row) }}>
-          <FontAwesomeIcon icon={['fa', 'trash-alt']} />
-        </Button> */}
       </div>
     );
   }
@@ -112,12 +110,24 @@ export default function ListPendaftar() {
     )
   }
 
+  const statusKomplain = (cell,row) => {
+    return(
+      <>
+        {row.status_komplain === 'RESOLVED'?      
+        <p className ='m-0'>Komplain Terselesaikan</p>
+        :
+        <p className ='m-0'>Komplain Dalam Proses Resolusi</p>
+        }
+      </>
+    )
+  }
+
   const columns = [{
     dataField: 'action',
     text: 'Action',
     formatter: GetActionFormat,
     headerStyle: (column, colIndex) => {
-      return { width: '180px' };
+      return { width: '150px' };
     }
   }
   , {
@@ -138,6 +148,10 @@ export default function ListPendaftar() {
     dataField: 'status_pesanan',
     text: 'Status Pesanan',
     formatter: statusPesanan
+  },{
+    dataField: 'status_komplain',
+    text: 'Status Komplain',
+    formatter: statusKomplain
   }];
 
   const selectRow = {
@@ -155,19 +169,19 @@ export default function ListPendaftar() {
 
   function fetchData(param) { 
     console.log(param)
-    axios.post('/app/gerai/order', param).then(({data}) => {
-        console.log(data)
+    axios.post('/app/gerai/report/complain', param).then(({data}) => {
+      console.log(data.data);
         if (data.status) {
-          setTotal(parseInt(data.total))
-          setUsers(data.data)          
+          setTotal(parseInt(data.total));
+          setUsers(data.data);
         } else {
           toast.error(data.msg, { containerId: 'B', transition: Zoom });
         }
-      }).catch(error => {
-        console.log(error.response)
+      }).catch((error) => {
+        console.log(error)
         if(error.response.status != 500){
           toast.error(error.response.data.msg, {containerId:'B', transition: Zoom});
-        }        
+        }
         else{
           toast.error(Errormsg['500'], {containerId: 'B', transition: Zoom});        
         }
@@ -339,7 +353,7 @@ export default function ListPendaftar() {
       </Modal>
       <Card>
         <CardBody>
-          <CardTitle>Daftar Pemesanan</CardTitle>
+          <CardTitle>Daftar Komplain</CardTitle>
           {/* <Button color = "primary" onClick = {() => {history.push('menu/edit')} }>+ Tambah Menu</Button> */}
           <div className="my-2">
             <Label>Search</Label>

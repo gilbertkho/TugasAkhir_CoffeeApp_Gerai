@@ -160,8 +160,8 @@ export default function ListPendaftar() {
     axios.post('/app/gerai/voucher', param).then(({data}) => {
         console.log(data)              
         if (data.status) {
-          setTotal(data.total)          
-          setUsers(data.data)
+          setTotal(parseInt(data.total));
+          setUsers(data.data);
         } else {
           toast.error(data.msg, { containerId: 'B', transition: Zoom });
         }
@@ -284,7 +284,7 @@ export default function ListPendaftar() {
           <Row>
             <Col xs={5}>Tanggal Berlaku</Col>
             {selectedUser.time_start != '' ?
-              <Col xs={7}>{": " + moment(selectedUser.time_start).format('DD-MM-YYYY')}</Col>
+              <Col xs={7}>{": " + moment(selectedUser.time_start).format('DD MMMM YYYY')}</Col>
               :
               <Col xs={7}>{": " + selectedUser.time_start}</Col>
             }
@@ -292,7 +292,7 @@ export default function ListPendaftar() {
           <Row>
             <Col xs={5}>Tanggal Berakhir</Col>
             {selectedUser.time_end != '' ?
-              <Col xs={7}>{": " + moment(selectedUser.time_end).format('DD-MM-YYYY')}</Col>
+              <Col xs={7}>{": " + moment(selectedUser.time_end).format('DD MMMM YYYY')}</Col>
               :
               <Col xs={7}>{": " + selectedUser.time_end}</Col>
             }
@@ -345,7 +345,7 @@ export default function ListPendaftar() {
           <Row>
             <Col xs={5}>Tanggal Berlaku</Col>
             {selectedUser.time_start != '' ?
-              <Col xs={7}>{": " + moment(selectedUser.time_start).format('DD-MM-YYYY')}</Col>
+              <Col xs={7}>{": " + moment(selectedUser.time_start).format('DD MMMM YYYY')}</Col>
               :
               <Col xs={7}>{": " + selectedUser.time_start}</Col>
             }
@@ -353,7 +353,7 @@ export default function ListPendaftar() {
           <Row>
             <Col xs={5}>Tanggal Berakhir</Col>
             {selectedUser.time_end != '' ?
-              <Col xs={7}>{": " + moment(selectedUser.time_end).format('DD-MM-YYYY')}</Col>
+              <Col xs={7}>{": " + moment(selectedUser.time_end).format('DD MMMM YYYY')}</Col>
               :
               <Col xs={7}>{": " + selectedUser.time_end}</Col>
             }
