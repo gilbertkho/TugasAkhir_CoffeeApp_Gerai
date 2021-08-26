@@ -1,3 +1,4 @@
+/*eslint-disable*/
 import React, { useRef, useState, useEffect } from 'react';
 import LaddaButton from 'react-ladda';
 import { Col, FormGroup, Input, FormFeedback, Row, Label, Button } from 'reactstrap';
@@ -107,6 +108,26 @@ export default function PageRegister(){
     }
   }
 
+  const sendVerification = () => {
+    axios.post('/app/gerai/verify/request',{
+      email: this.state.email
+    }).then(({data}) => {
+      if(data.status){
+        toast.success(data.msg, {containerId:'B', transition:Zoom});
+      }
+      else{
+        toast.error(data.msg, {containerId:'B', transition:Zoom});
+      }
+    }).catch((error) => {
+      if(error.response.status != 500){
+        toast.error(error.response.data.msg, {containerId:'B', transition: Zoom});
+      }
+      else{
+        toast.error(Errormsg['500'], {containerId: 'B', transition: Zoom});
+      }
+    })
+  }
+
   const register = () => {
     if(!reg.nama || !reg.nama_pemilik || !reg.alamat || !reg.no_telp || !reg.email || !reg.pass || !reg.c_pass || !reg.foto || !reg.kecamatan || !reg.kelurahan || !reg.no_rek || !reg.bank){
       setSubmitted(true);
@@ -129,6 +150,7 @@ export default function PageRegister(){
         if(data.status){
           setSubmitted(false)
           toast.success(data.msg, {containerId:"B", transition:Zoom});
+          sendVerification();
         }
         else{
           setSubmitted(false)

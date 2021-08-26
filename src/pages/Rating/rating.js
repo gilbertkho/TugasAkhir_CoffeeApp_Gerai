@@ -281,7 +281,7 @@ export default function AdminReqList(props) {
           :
           <div className="text-center">            
             <h2>
-              Belum ada data hasil ujian.
+              Data rating masih belum tersedia.
             </h2>
           </div>}          
         </CardBody>

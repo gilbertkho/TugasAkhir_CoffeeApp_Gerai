@@ -1,3 +1,4 @@
+/* eslint-disable */
 import React from 'react';
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -5,7 +6,7 @@ import { useHistory } from 'react-router-dom';
 import ChartAdmin from './chartAdmin';
 import axios from 'config/axios';
 import { toast, Zoom } from 'react-toastify';
-import { Row, Col, CardBody, Card, Button } from 'reactstrap';
+import { Row, Col, CardBody, Card, Button, Toast } from 'reactstrap';
 import Errormsg from 'config/errormsg';
 import checkStatus from 'config/checkStatus';
 import localforage from 'localforage';
@@ -18,6 +19,7 @@ class dashboard extends React.Component {
       apikey: '',
       menu: 0,
       verified: false,
+      email: '',
       tipeMenu: 0,
       task: 0,
       voucher: 0,
@@ -36,14 +38,15 @@ class dashboard extends React.Component {
       key = await localforage.getItem('APIKEY');
       this.setState({ apikey: key });
       let statusGerai = await checkStatus();
-      console.log('STATUS GERAI', statusGerai);
+      // console.log('STATUS GERAI', statusGerai);
+      this.setState({email: statusGerai.data.email});
       if (statusGerai.verified) {
         this.setState({ verified: true });
         if (!statusGerai.status) {
-          console.log('GERAI BELUM AKTIF');
+          // console.log('GERAI BELUM AKTIF');
           if (statusGerai.onGoingTrans) {
             //jika masih ada transaksi yang belum selesai
-            console.log('GERAI BELUM AKTIF || TRANSAKSI BELUM SELESAI');
+            // console.log('GERAI BELUM AKTIF || TRANSAKSI BELUM SELESAI');
             this.setState({
               onGoing: statusGerai.onGoingTrans,
               paid: 'WAIT',
@@ -52,7 +55,7 @@ class dashboard extends React.Component {
           }
           if (statusGerai.notYetAcc) {
             //jika sudah paid tapi belum di konfirmasi admin
-            console.log('GERAI BELUM AKTIF || TRANSAKSI OK BELUM DI KONFIRMASI');
+            // console.log('GERAI BELUM AKTIF || TRANSAKSI OK BELUM DI KONFIRMASI');
             this.setState({
               NoSubs: true,
               paid: 'YES'
@@ -60,7 +63,7 @@ class dashboard extends React.Component {
           }
         } else {
           //jika gerai sudah aktif
-          console.log('GERAI SUDAH AKTIF');
+          // console.log('GERAI SUDAH AKTIF');
           this.setState({ NoSubs: false });
         }
       }
@@ -232,6 +235,38 @@ class dashboard extends React.Component {
     this.props.history.push('./rating');
   };
 
+  sendVerification = () => {
+    toast.info('Sedang mengirim email verifikasi', {containerId:'B', transition:Zoom, autoClose:5000});
+    axios.post('/app/gerai/verify/request',{
+      email: this.state.email
+    }).then(({data}) => {
+      if(data.status){
+        toast.success(data.msg, {containerId:'B', transition:Zoom});
+      }
+      else{
+        toast.error(data.msg, {containerId:'B', transition:Zoom});
+      }
+    }).catch((error) => {
+      if(error.response.status != 500){
+        toast.error(error.response.data.msg, {containerId:'B', transition: Zoom});
+      }
+      else{
+        toast.error(Errormsg['500'], {containerId: 'B', transition: Zoom});
+      }
+    })
+  }
+
+  checkVerification = async() => {
+    let statusGerai = await checkStatus();
+    if (statusGerai.verified) {
+      this.setState({ verified: true });
+      toast.success('Gerai terverifikasi', {containerId:'B', transition:Zoom});
+    }
+    else{
+      toast.warning('Gerai belum terverifikasi', {containerId:'B', transition:Zoom});
+    }
+  }
+
   render() {
     return (
       <>
@@ -241,6 +276,74 @@ class dashboard extends React.Component {
               <div className="flex-grow-1 w-100 p-5">
                 {/* <h1>{this.state.wave}</h1> */}
                 {/* <h4 className="text-info">{"Total Pendaftaran: " + this.state.totalreg}</h4> */}
+                <Row className={this.state.verified ? "d-none" : "d-block"}>
+                  <Col>
+                    <Card className= "card-box mb-5 bg-warning border-0 text-light" >
+                      <CardBody>
+                        <div className="align-box-row align-items-start">
+                          <div className="font-weight-bold">
+                            <small className="text-white-50 d-block mb-1 text-uppercase">
+                              Status Verifikasi
+                            </small>
+                            <span className="font-size-md mt-1 text-justify">
+                              Akun gerai masih dalam tahap verifikasi, harap periksa email anda dan lakukan verifikasi akun untuk dapat menggunakan akun sepenuhnya.
+                              {/* Jika email masih belum terkirim silahkan tekan tombol kirim ulang verifikasi. Untuk memeriksa ulang status verifikasi silahkan tekan tombol cek status verifikasi. */}
+                            </span><br/>
+                            <Button className ='mt-2 mr-2' color='primary' onClick = {this.sendVerification}>Kirim Ulang Email Verifikasi</Button>
+                            <Button className ='mt-2' color='primary' onClick = {this.checkVerification}>Cek Status Verifikasi</Button>
+                          </div>
+                          <div className="ml-auto">
+                            <div className="bg-white text-center text-info font-size-xl d-50 rounded-circle btn-icon">
+                              <FontAwesomeIcon icon={['fa', 'user-check']} />
+                            </div>
+                          </div>
+                        </div>
+                      </CardBody>
+                    </Card>
+                  </Col>
+                </Row>
+                <Row className={this.state.verified && this.state.NoSubs? "d-block" : "d-none"}>
+                  <Col>
+                    <Card className={this.state.paid === 'YES' ? "card-box mb-5 bg-success border-0 text-light"
+                    : this.state.paid === 'NO'? "card-box mb-5 bg-warning border-0 text-light"
+                    : "card-box mb-5 bg-info border-0 text-light"}>
+                      <CardBody>
+                        <div className="align-box-row align-items-start">
+                          <div className="font-weight-bold">
+                            <small className="text-white-50 d-block mb-1 text-uppercase">
+                              Status Gerai
+                            </small>
+                            <span className="font-size-md mt-1 text-justify">
+                              {this.state.paid === 'YES' ?
+                                "Transaksi sudah dikonfirmasi, harap menunggu proses pengaktifan akun gerai maksimal 1 x 24 jam."
+                              : this.state.paid === 'NO' ?
+                                "Penggunaan fitur aplikasi gerai masih terbatas. Untuk membuka semua fitur silahkan lakukan pembelian akses dengan cara berlangganan setiap bulannya seharga Rp.100,000."
+                              : "Anda sedang dalam proses transaksi, harap menyelesaikan transaksi anda dalam 15 menit." 
+                              }
+                            </span>
+                          </div>
+                          <div className="ml-auto">
+                            <div className="bg-white text-center text-info font-size-xl d-50 rounded-circle btn-icon">
+                              <FontAwesomeIcon icon={['fa', 'calendar']} />
+                            </div>
+                          </div>
+                        </div>
+                        {this.state.paid !== 'YES'?
+                          <Button className = "mt-2" color="success" onClick= {this.getSubs} >
+                            {this.state.order_id ? "Ke Link Pembayaran" : "Berlangganan Sekarang" }
+                          </Button>
+                          :null
+                        }
+                        {this.state.paid !== 'YES' && this.state.order_id ?                            
+                            <Button className = "mt-2 ml-3" color="first" onClick= {this.getPaymentStatus} >
+                              Cek Status Pembayaran
+                            </Button>
+                        :null
+                        }
+                      </CardBody>
+                    </Card>
+                  </Col>
+                </Row>
                 <Row>
                   <Col lg="12" xl="6">
                     <Card className="card-box mb-5 bg-midnight-bloom border-0 text-light">
@@ -429,71 +532,7 @@ class dashboard extends React.Component {
                     </Card>
                   </Col>
                 </Row>                
-                <Row className={this.state.verified && this.state.NoSubs? "d-block" : "d-none"}>
-                  <Col>
-                    <Card className={this.state.paid === 'YES' ? "card-box mb-5 bg-success border-0 text-light"
-                    : this.state.paid === 'NO'? "card-box mb-5 bg-warning border-0 text-light"
-                    : "card-box mb-5 bg-info border-0 text-light"}>
-                      <CardBody>
-                        <div className="align-box-row align-items-start">
-                          <div className="font-weight-bold">
-                            <small className="text-white-50 d-block mb-1 text-uppercase">
-                              Status Gerai
-                            </small>
-                            <span className="font-size-md mt-1 text-justify">
-                              {this.state.paid === 'YES' ?
-                                "Transaksi sudah dikonfirmasi, harap menunggu proses pengaktifan akun gerai maksimal 1 x 24 jam."
-                              : this.state.paid === 'NO' ?
-                                "Penggunaan fitur aplikasi gerai masih terbatas. Untuk membuka semua fitur silahkan lakukan pembelian akses dengan cara berlangganan setiap bulannya seharga Rp.100,000."
-                              : "Anda sedang dalam proses transaksi, harap menyelesaikan transaksi anda dalam 15 menit." 
-                              }
-                            </span>
-                          </div>
-                          <div className="ml-auto">
-                            <div className="bg-white text-center text-info font-size-xl d-50 rounded-circle btn-icon">
-                              <FontAwesomeIcon icon={['fa', 'calendar']} />
-                            </div>
-                          </div>
-                        </div>
-                        {this.state.paid !== 'YES'?
-                          <Button className = "mt-2" color="success" onClick= {this.getSubs} >
-                            {this.state.order_id ? "Ke Link Pembayaran" : "Berlangganan Sekarang" }
-                          </Button>
-                          :null
-                        }
-                        {this.state.paid !== 'YES' && this.state.order_id ?                            
-                            <Button className = "mt-2 ml-3" color="first" onClick= {this.getPaymentStatus} >
-                              Cek Status Pembayaran
-                            </Button>
-                        :null
-                        }
-                      </CardBody>
-                    </Card>
-                  </Col>
-                </Row>
-                <Row className={this.state.verified ? "d-none" : "d-block"}>
-                  <Col>
-                    <Card className= "card-box mb-5 bg-warning border-0 text-light" >
-                      <CardBody>
-                        <div className="align-box-row align-items-start">
-                          <div className="font-weight-bold">
-                            <small className="text-white-50 d-block mb-1 text-uppercase">
-                              Status Verifikasi
-                            </small>
-                            <span className="font-size-md mt-1 text-justify">
-                              Akun gerai masih dalam tahap verifikasi, silahkan menunggu dalam beberapa waktu sebelum akun dapat digunakan sepenuhnya.
-                            </span>
-                          </div>
-                          <div className="ml-auto">
-                            <div className="bg-white text-center text-info font-size-xl d-50 rounded-circle btn-icon">
-                              <FontAwesomeIcon icon={['fa', 'user-check']} />
-                            </div>
-                          </div>
-                        </div>
-                      </CardBody>
-                    </Card>
-                  </Col>
-                </Row>
+                                
                 {/* <ChartAdmin regdata={this.state.regdata} /> */}
                 {/* {
                 this.state.notes.map((note,key)=>{
