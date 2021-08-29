@@ -143,7 +143,7 @@ export default function LaporanMenu(props) {
   }, [])
 
   useEffect(() => {    
-    if(param.apikey !== ''){
+    if(param.apikey !== ''){      
       fetchData(param)
     }
   }, [param]);

@@ -36,13 +36,14 @@ export default function ListPendaftar() {
       noData: {
         text: "Data not found."
       }
-  })
+  });
   const [chartSeries, setChartSeries] = useState([
     {
       name: "Jumlah Pesanan",
       data: []
     }
-  ])
+  ]);
+
   const sizePerPage = 10;
   const searchRef = useRef();
   const [param, setParam] = useState({
@@ -74,22 +75,30 @@ export default function ListPendaftar() {
 
   const addCommas = (num) => {
     return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")
-  };  
+  };
+
+  const resetChart = () => {
+    let series = [...chartSeries];
+    let options = {...chartOptions};
+    series[0].data = [];
+    options.xaxis.categories = [];
+    setChartSeries(series);
+    setChartOptions(options);
+  }
 
   function fetchData(param) { 
-    console.log(param)
-    axios.post('/app/gerai/report/pesanan', param).then(({data}) => {
-        console.log(data)
+    // console.log(param)    
+    axios.post('/app/gerai/report/pesanan', param).then(({data}) => {        
         if (data.status) {
-          console.log(data);
+          // console.log(data);
           let series = [...chartSeries];
           let options = {...chartOptions};
           data.data.forEach((dt, key) => {
-            series[0].data.push(parseInt(dt.count))
-            options.xaxis.categories.push(moment(dt.tgl_pesanan).format('DD MMMM YYYY'))
+            series[0].data.push(parseInt(dt.count));
+            options.xaxis.categories.push(moment(dt.tgl_pesanan).format('DD MMMM YYYY'));
           })
-          setChartSeries(series)
-          setChartOptions(options)
+          setChartSeries(series);
+          setChartOptions(options);
         } else {
           toast.error(data.msg, { containerId: 'B', transition: Zoom });
         }
@@ -115,7 +124,8 @@ export default function ListPendaftar() {
 
   useEffect(() => {    
     if(param.apikey !== ''){
-      fetchData(param)
+      resetChart();
+      fetchData(param);
     }
   }, [param]);
 
@@ -130,9 +140,9 @@ export default function ListPendaftar() {
   }
 
   const clearSearch = () => {
-    setTimeStart('')
-    setTimeEnd('')
-    setParam((prevState) => ({ ...prevState, page: 1, time_start: '', time_end: '' }))
+    setTimeStart('');
+    setTimeEnd('');
+    setParam((prevState) => ({ ...prevState, page: 1, time_start: '', time_end: '' }));    
   }
 
   const handleSearch = (e) => {
@@ -141,14 +151,15 @@ export default function ListPendaftar() {
     if(Date.parse(timeStart) >  Date.parse(timeEnd)){
       toast.error('Tanggal berlaku tidak boleh melebihi tanggal berakhir', { containerId: 'B', transition: Zoom });
     }
-    else{
-      setParam((prevState) => ({ ...prevState, page: 1, time_start: timeStart, time_end: timeEnd, apikey: apikey }))
+    else{      
+      setParam((prevState) => ({ ...prevState, page: 1, time_start: timeStart, time_end: timeEnd, apikey: apikey }));
     }
   }
+
   useEffect(() => {
-    console.log('INI OPTIONS' , chartOptions)
-    console.log('INI SERIES' , chartSeries)
-    // chart.updateSeries(chartSeries)    
+    console.log('INI OPTIONS' , chartOptions);
+    console.log('INI SERIES' , chartSeries);
+    // chart.updateSeries(chartSeries)
   },[chartOptions, chartSeries])
 
   return (
