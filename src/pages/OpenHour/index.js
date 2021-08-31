@@ -64,12 +64,46 @@ export default function ChatList(props) {
     }
   },[apikey]);
 
-  function fetchData() {    
+  function fetchData() {
     axios.post('app/gerai/openhour',{
       apikey: apikey
     }).then(({data}) => {
+      console.log(data);
       if(data.status){
-        setReq(JSON.parse(data.data.waktu));
+        if(!data.data){
+          setReq([{
+            day : 'Monday',
+            open : '',
+            close : '',
+          },{
+            day : 'Tuesday',
+            open : '',
+            close : '',
+          },{
+            day : 'Wednesday',
+            open : '',
+            close : '',
+          },{
+            day : 'Thursday',
+            open : '',
+            close : '',
+          },{
+            day : 'Friday',
+            open : '',
+            close : '',
+          },{
+            day : 'Saturday',
+            open : '',
+            close : '',
+          },{
+            day : 'Sunday',
+            open : '',
+            close : '',
+          },])
+        }
+        else{
+          setReq(JSON.parse(data.data));
+        }
       }
       else{        
         toast.error(data.msg, {containerId: "B", transition: Zoom})
@@ -103,7 +137,7 @@ export default function ChatList(props) {
           close : '',
         },])
       }
-    }).catch((error) => {    
+    }).catch((error) => {
       setReq([{
         day : 'Monday',
         open : '',
