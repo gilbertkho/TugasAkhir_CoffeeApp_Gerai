@@ -133,17 +133,13 @@ export default function ListPendaftar() {
   , {
     dataField: 'nama_pelanggan',
     text: 'Nama Pelanggan'
-  }, {
+  },{
+    dataField: 'isi_komplain',
+    text: 'Komplain'
+  },{
     dataField: 'waktu_pesanan',
     text: 'Tanggal Pesanan',
     formatter : timeFormat
-  }, {
-    dataField: 'total_pesanan',
-    text: 'Jumlah Pesanan'
-  }, {
-    dataField: 'total_harga',
-    text: 'Total Harga',
-    formatter: setNumberFormat
   },{
     dataField: 'status_pesanan',
     text: 'Status Pesanan',
@@ -290,6 +286,10 @@ export default function ListPendaftar() {
           </Row>
           <Row className = 'p-3'>
               <Col className = 'border border-primary'>
+                <p className = 'text-center'>Isi Komplain</p>
+                <p className = 'text-justify'>{selectedUser.isi_komplain}</p>
+              </Col>
+              {/* <Col className = 'border border-primary'>
                 <p className = 'text-center'>Detail Pesanan</p>
                 {
                   selectedUser.detail?
@@ -343,7 +343,7 @@ export default function ListPendaftar() {
                   })
                   :null
                 }
-              </Col>
+              </Col> */}
           </Row>          
         </ModalBody>
         <ModalFooter>

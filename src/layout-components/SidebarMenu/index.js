@@ -333,7 +333,7 @@ const SidebarMenu = (props) => {
                       <NavLink
                         onClick={toggleSidebarMobile}
                         to="/laporan/complain">
-                        Complain
+                        Komplain
                       </NavLink>
                     </li>
                   </ul>

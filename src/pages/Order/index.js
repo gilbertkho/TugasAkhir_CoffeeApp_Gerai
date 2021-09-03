@@ -264,7 +264,7 @@ export default function ListPendaftar() {
           </Row>
           <Row>
             <Col xs={4}>Voucher</Col>
-            <Col xs={8}>{": " + (selectedUser.nama_voucher !== 'undefined' ? selected.nama_voucher : 'Tidak menggunakan voucher apapun' )}</Col>
+            <Col xs={8}>{": " + (selectedUser.nama_voucher !== 'undefined' ? selectedUser.nama_voucher : 'Tidak menggunakan voucher apapun' )}</Col>
           </Row>
           <Row>
             <Col xs={4}>Status Pesanan</Col>
