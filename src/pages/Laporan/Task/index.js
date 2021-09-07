@@ -82,20 +82,18 @@ export default function ListLaporanTask() {
     )       
 }
   
-  const timeStartFormat = (cell,row) =>{
-    let date = new Date(row.time_start);    
+  const timeStartFormat = (cell,row) =>{    
     return(
       <>
-        {date.getDate()+ " " + date.toLocaleDateString('default',{month:'long'}) +" "+ date.getFullYear()}
+        {moment(row.time_start).format('DD MMMM YYYY')}
       </>
     )
   }
   
-  const timeEndFormat = (cell,row) =>{
-    let date = new Date(row.time_end);    
+  const timeEndFormat = (cell,row) =>{    
     return(
       <>
-        {date.getDate()+ " " + date.toLocaleDateString('default',{month:'long'}) +" "+ date.getFullYear()}
+        {moment(row.time_end).format('DD MMMM YYYY')}
       </>
     )
   }

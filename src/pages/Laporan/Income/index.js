@@ -389,7 +389,7 @@ export default function ListMenu() {
           </div>
           <div className = 'rounded bg-secondary mb-2 px-3 py-2 font-weight-bold'>
             Pemasukkan Kotor: <br/>
-            <h5>{'Rp. ' + addCommas(income.gross)}</h5>            
+            <h5>{'Rp. ' + addCommas(income.gross)}</h5> 
             <hr/>
             Pemasukkan Bersih: <br/>
             <h5>{'Rp. ' + addCommas(income.clean)}</h5>

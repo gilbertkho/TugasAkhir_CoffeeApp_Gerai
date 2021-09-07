@@ -36,7 +36,8 @@ export default function LaporanTask(props) {
       },
       noData: {
         text: "Data not found."
-      }
+      },
+      colors:['#07ff60','#ff9500','#9C27B0']
   })
   const [chartSeries, setChartSeries] = useState([
     {
@@ -178,9 +179,9 @@ export default function LaporanTask(props) {
             <BreadcrumbItem><a href="/#" onClick={(e) => { e.preventDefault(); history.push('/laporan/Task/list') }}>Task</a></BreadcrumbItem>
             <BreadcrumbItem active>Laporan Task</BreadcrumbItem>
           </Breadcrumb>
-          <Breadcrumb class='p-0'>            
-            <h6 class='m-0 p-0 font-weight-bold'>{param.nama_reward + ' - ' + addCommas(param.level_task)}</h6>
-          </Breadcrumb>          
+          <Breadcrumb className='p-0'>
+            <h6 className='m-0 p-0 font-weight-bold'>{param.nama_reward + ' - ' + addCommas(param.level_task)}</h6>
+          </Breadcrumb>
         </CardBody>
         {chartOptions.xaxis.categories.length > 0 ?
         <Chart

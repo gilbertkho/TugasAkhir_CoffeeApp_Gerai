@@ -20,7 +20,7 @@ import {
   Shield,
   Database,
   Clipboard,
-  Flag,
+  PieChart,
   Settings,
   Layout,
   List,
@@ -292,7 +292,7 @@ const SidebarMenu = (props) => {
                   onClick={toggleLaporan}
                   className={clsx({ active: laporanOpen })}>
                   <span className="sidebar-icon">
-                    <Flag/>
+                    <PieChart/>
                   </span>
                   <span className="sidebar-item-label">Laporan</span>
                   <span className="sidebar-icon-indicator">
