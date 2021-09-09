@@ -287,8 +287,8 @@ export default function ListPendaftar() {
             <Col xs={8}>{modal ? ": " + addCommas(selectedUser.kuota_task) : ": " + selectedUser.kuota_task}</Col>
           </Row>
           <Row>
-            <Col xs={4}>Kuota</Col>
-            <Col xs={8}>{": " + selectedUser.kuota_task}</Col>
+            <Col xs={4}>Voucher Reward</Col>
+            <Col xs={8}>{": " + selectedUser.nama_voucher}</Col>
           </Row>
           <Row>
             <Col xs={4}>Tanggal Berlaku</Col>
@@ -318,6 +318,10 @@ export default function ListPendaftar() {
           <Row>
             <Col xs={4}>Kuota</Col>
             <Col xs={8}>{toDelete ? ": " + addCommas(selectedUser.kuota_task) : ": " + selectedUser.kuota_task}</Col>
+          </Row>
+          <Row>
+            <Col xs={4}>Voucher Reward</Col>
+            <Col xs={8}>{": " + selectedUser.nama_voucher}</Col>
           </Row>
           <Row>
             <Col xs={4}>Tanggal Berlaku</Col>

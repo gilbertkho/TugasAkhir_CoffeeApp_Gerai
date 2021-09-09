@@ -110,32 +110,40 @@ export default function AdminReqEditForm(props) {
     //     setReq({...req, apikey: key.key})
     //   }
     // })
-    if (props.location.state && props.location.state.user) {      
-      let propsReq = props.location.state.user;
-      getApiKey().then((key) => {
-        if(key.status){
-          setApikey(key.key)
+    getApiKey().then((key) => {
+      if(key.status){
+        setApikey(key.key);
+        if (props.location.state && props.location.state.user) {
+            let propsReq = props.location.state.user;
+            console.log('INI KEY1 ',key.key);
+            setReq({
+              ...req,
+              id_voucher: propsReq.id_voucher,
+              id_task: propsReq.id_task,
+              level_task: propsReq.level_task,
+              time_start: propsReq.time_start,
+              time_end: propsReq.time_end,
+              kuota_task: propsReq.kuota_task,
+              status_task: propsReq.status_task,
+              apikey: key.key
+            });
+            setActionType("edit");
+        }
+        else{
+          console.log('INI KEY2 ',key.key);
           setReq({
             ...req,
-            id_voucher: propsReq.id_voucher,
-            id_task: propsReq.id_task,
-            level_task: propsReq.level_task,
-            time_start: propsReq.time_start,
-            time_end: propsReq.time_end,
-            kuota_task: propsReq.kuota_task,
-            status_task: propsReq.status_task,
             apikey: key.key
           });
         }
-      })
+      }
+    })
       // setParam({...param,setupid:propsReq.id});
       // setReqMajor({...reqMajor,setupid:propsReq.id});
       // getCategory();
       // let file = [];
       // file.push(urlConfig.urlBackend + "app/gerai/menu_photo/" + propsReq.id_menu)
-      // setFilePrev(urlConfig.urlBackend + "app/gerai/menu_photo/" + propsReq.id_menu)
-      setActionType("edit");
-    }
+      // setFilePrev(urlConfig.urlBackend + "app/gerai/menu_photo/" + propsReq.id_menu)          
   }, []);
   
   useEffect(() => {
@@ -154,6 +162,7 @@ export default function AdminReqEditForm(props) {
   },[req])
   
   useEffect(() => {
+    console.log('CON ', apikey)
     if(apikey !== ''){
       getIdVoucher();
     }
@@ -166,8 +175,7 @@ export default function AdminReqEditForm(props) {
       active: true,
       tipe_voucher: 'REWARD',
       apikey: apikey
-    }
-    console.log(paramTipe)
+    }    
     axios.post("/app/gerai/voucher", paramTipe).then(({data}) => {
       console.log(data)
       if(data.status){
@@ -209,6 +217,7 @@ export default function AdminReqEditForm(props) {
         url = '/app/gerai/task/update';
         successMsg = 'Task berhasil diubah';
       }
+      console.log('REQ: ',req)
       axios.post(url, req).then(({ data }) => {        
         if (data.status) {
           toast.success(successMsg, { containerId: 'B', transition: Zoom });

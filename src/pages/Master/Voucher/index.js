@@ -74,12 +74,6 @@ export default function ListPendaftar() {
       </div>
     );
   }
-  
-  const getPhotoFormat = (cell,row) =>{    
-    return (
-      <img height="150" width="150" src={urlConfig.urlBackend + "app/gerai/menu_photo/" + row.id_menu }/>
-    )
-  }
 
   const setNumberFormat = (cell,row) =>{
     if(row.value_voucher){
@@ -142,19 +136,6 @@ export default function ListPendaftar() {
     formatter: statusFormat
   }];
 
-  const selectRow = {
-    mode: 'checkbox',
-    clickToSelect: true,
-    hideSelectAll: true,
-    selectColumnStyle: { width: 40 },
-    onSelect: (row, isSelect, rowIndex, e) => {
-      // console.log(row.id);
-      // console.log(isSelect);
-      // console.log(rowIndex);
-      // console.log(e);
-    },
-  };
-
   function fetchData(param) { 
     console.log(param)
     axios.post('/app/gerai/voucher', param).then(({data}) => {
@@ -172,21 +153,6 @@ export default function ListPendaftar() {
         else{
           toast.error(Errormsg['500'], {containerId: 'B', transition: Zoom});        
         }        
-      })
-  }
-
-  function getDetailRegister(id) {
-    toast.dismiss();
-    axios.post('/b/o/master/registered/period', JSON.stringify({ id: id })).then(res => res.data)
-      .then(data => {
-        // console.log("period", data);
-        setPeriod(data.data);
-      }).catch(error => {
-        // if (!error.response) {
-        //   alert(error)
-        //   return
-        // }
-        toast.error(Errormsg['500'], { containerId: 'B', transition: Zoom });
       })
   }
 
@@ -215,12 +181,7 @@ export default function ListPendaftar() {
   const deleteHandler = async () => {
     toast.dismiss();
     axios.post('app/gerai/voucher/delete', {id_voucher: selectedUser.id_voucher, apikey: apikey}).then(({data}) => {
-        if (data.status) {
-          // if (page == 1) {
-          //   fetchData(1, sizePerPage);
-          // } else {
-          //   setPage(1);
-          // }
+        if (data.status) {        
           toast.success(data.msg, {containerId:"B", transition:Zoom});
           fetchData(param);
           toggleDelete({});

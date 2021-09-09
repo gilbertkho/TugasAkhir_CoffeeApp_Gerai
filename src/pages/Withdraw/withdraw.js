@@ -152,7 +152,7 @@ export default function Withdraw(props) {
   const timeFormat = (cell,row) =>{        
     return(
       <>
-        {moment(row.tgl_penarikan).format('DD MMMM YYYY, h:mm')}
+        {moment(row.tgl_penarikan).format('DD MMM YYYY, HH:mm')}
       </>
     )
   }

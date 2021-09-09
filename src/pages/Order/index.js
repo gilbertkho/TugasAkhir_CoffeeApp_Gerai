@@ -75,9 +75,6 @@ export default function ListPendaftar() {
         <Button color="primary" className="mr-2" size="sm" onClick={(e) => { e.stopPropagation(); toEditUser(row) }}>
           <FontAwesomeIcon icon={['fa', 'edit']} />
         </Button>
-        {/* <Button color="danger" className="mr-2" size="sm" onClick={(e) => { e.stopPropagation(); toggleDelete(row) }}>
-          <FontAwesomeIcon icon={['fa', 'trash-alt']} />
-        </Button> */}
       </div>
     );
   }
@@ -90,11 +87,10 @@ export default function ListPendaftar() {
     }    
   }
 
-  const timeFormat = (cell,row) =>{
-    let date = new Date(row.tgl_pesanan);    
+  const timeFormat = (cell,row) =>{    
     return(
       <>
-        {moment(row.tgl_pesanan).format('DD MMM YYYY, H:mm')}
+        {moment(row.tgl_pesanan).format('DD MMM YYYY, HH:mm')}
       </>
     )
   }
@@ -139,19 +135,6 @@ export default function ListPendaftar() {
     text: 'Status Pesanan',
     formatter: statusPesanan
   }];
-
-  const selectRow = {
-    mode: 'checkbox',
-    clickToSelect: true,
-    hideSelectAll: true,
-    selectColumnStyle: { width: 40 },
-    onSelect: (row, isSelect, rowIndex, e) => {
-      // console.log(row.id);
-      // console.log(isSelect);
-      // console.log(rowIndex);
-      // console.log(e);
-    },
-  };
 
   function fetchData(param) { 
     console.log(param)
@@ -244,7 +227,7 @@ export default function ListPendaftar() {
           </Row>
           <Row>
             <Col xs={4}>Tanggal Pesanan</Col>
-            <Col xs={8}>{": " + moment(selectedUser.tgl_pesanan).format('DD MMMM YYYY, H:mm')}</Col>
+            <Col xs={8}>{": " + moment(selectedUser.tgl_pesanan).format('DD MMM YYYY, HH:mm')}</Col>
           </Row>
           <Row>
             <Col xs={4}>Jumlah Pesanan</Col>
