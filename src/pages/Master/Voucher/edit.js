@@ -21,13 +21,14 @@ import Select, { Option } from 'rc-select';
 import LaddaButton from 'react-ladda/dist/LaddaButton';
 import getApiKey from 'config/getApiKey';
 
-export default function AdminReqEditForm(props) {
+export default function VoucherEditForm(props) {
   // const admin = props.location.state.admin;
   const history = useHistory();
   const [apikey, setApikey] = useState('');
   const [toAdd, setToAdd] = useState(false);
   const [toDelete, setToDelete] = useState(false);
   // const [catSoal, setCatSoal] = useState([]);
+  let currentDate =  moment(new Date()).format('yyyy-MM-DD');
   let [page, setPage] = useState(1);
   const sizePerPage = 100;
   const [req, setReq] = useState({ 
@@ -103,22 +104,12 @@ export default function AdminReqEditForm(props) {
   };
 
   const resetForm = () => {
-    resetReq();
-    // setFilePrev("");
-    // resetMajor();
-    // resetReqMajor();
-    // setParam({
-    //   page: page,
-    //   count: sizePerPage,
-    //   setupid: "",
-    // })
+    resetReq();    
     setActionType("add");
   }
 
-  useEffect(() => {
-    // getPeriodReg();
-    resetForm();
-    // getIdTipe();
+  useEffect(() => {    
+    resetForm();    
     getApiKey().then((key) => {
       if(key.status){
         setApikey(key.key)
@@ -151,11 +142,6 @@ export default function AdminReqEditForm(props) {
           setFilePrev(urlConfig.urlBackend + "app/gerai/voucher_photo/" + propsReq.id_voucher + '/' + key.key)
         }
       })
-      // setParam({...param,setupid:propsReq.id});
-      // setReqMajor({...reqMajor,setupid:propsReq.id});
-      // getCategory();
-      // let file = [];
-      // file.push(urlConfig.urlBackend + "app/gerai/menu_photo/" + propsReq.id_menu)
       setActionType("edit");
     }
   }, []);  
@@ -260,18 +246,7 @@ export default function AdminReqEditForm(props) {
         if (data.status) {
           toast.success(successMsg, { containerId: 'B', transition: Zoom });
           if (actionType == 'add') {
-            //reset form
-            // resetReq();
-            // console.log(data)
-            // "7ac6c7ec-5bc1-11eb-bbea-5347da316c9a"
-            setReq({...req, id_voucher:data.data})
-            // setParam({...param, setupid:data.data.id})
-            // setReqMajor({...reqMajor, setupid:data.data.id})
-            // axios.post("/b/o/master/exam/setup/id",{"id":data.data.id}).then(({data})=>{
-            //   console.log(data);                
-            // }).catch(error=>{
-            //   toast.error(Errormsg['500'], {containerId:"B", transition:Zoom})
-            // })
+            setReq({...req, id_voucher:data.data})            
             setActionType('edit');
           } else {
             //return to list after timeout
@@ -362,7 +337,8 @@ export default function AdminReqEditForm(props) {
               </FormGroup>
               <FormGroup>
                 <Label for = "timestart">Tanggal Berlaku</Label>
-                <Input id = "timestart" type = "date"                 
+                <Input id = "timestart" type = "date"
+                max = {currentDate}
                 value={req.time_start}
                 onChange = {(e) => changeReq("time_start", e.target.value)} 
                 invalid = {req.time_start === '' && submited}/>

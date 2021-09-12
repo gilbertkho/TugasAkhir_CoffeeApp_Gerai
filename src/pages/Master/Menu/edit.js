@@ -22,15 +22,10 @@ import LaddaButton from 'react-ladda/dist/LaddaButton';
 import getApiKey from 'config/getApiKey';
 import { key } from 'localforage';
 
-export default function AdminReqEditForm(props) {
+export default function MenuEditForm(props) {
   // const admin = props.location.state.admin;
   const history = useHistory();
   const [apikey, setApikey] = useState('');
-  const [toAdd, setToAdd] = useState(false);
-  const [toDelete, setToDelete] = useState(false);
-  // const [catSoal, setCatSoal] = useState([]);
-  let [page, setPage] = useState(1);
-  const sizePerPage = 100;
   const [req, setReq] = useState({ 
     id_menu: "",
     id_tipe: "",
@@ -42,11 +37,7 @@ export default function AdminReqEditForm(props) {
     foto: [],
     apikey: '',
   });
-  const [param, setParam] = useState({
-    page: page,
-    count: sizePerPage,
-    setupid: "",
-  });
+  
   const [filePrev, setFilePrev] = useState("");
   const [actionType, setActionType] = useState("add");
   const [submited, setSubmited] = useState(false);
@@ -65,38 +56,14 @@ export default function AdminReqEditForm(props) {
     apikey: '',    
     })
   };
-
-  let [totalSize, setTotal] = useState(0);
-  const [major, setMajor] = useState([]);
-  const [reqMajor, setReqMajor] = useState({id:"",  setupid:"", major:"", countquestion:0, setupquestion:[]});
-  const [selectedReq, setSelectedReq] = useState({});
-  const changeReqMajor = (field, value) => { setReqMajor({ ...reqMajor,[field]: value}); };
-  const [majorActionType, setMajorActionType] = useState("add");  
+  
   const [submitDisable, setSubmitDisable] = useState(false);
-  const [periodReg, setPeriodReg] = useState([]);
-  const [category, setCategory] = useState([]);
-  const resetMajor = () => { setMajor([]) }
-  const [countQ, setCountQ] = useState(0);
-  const resetCountQ = () => { setCountQ(0) };
-  const resetReqMajor = () => { setReqMajor({id:"",  setupid: param.setupid, major:"", countquestion:"", setupquestion:[] })};
+
   const changeSubmitDisableState = (value) => { setSubmitDisable(value) };
-  const changeRequirement = (field, index, value) => {
-    let oldReq = req.requirement;
-    oldReq[index][field] = value;
-    setReq({ ...req, requirement: oldReq });
-    // console.log(req);
-  };
 
   const resetForm = () => {
     resetReq();
     setFilePrev("");
-    // resetMajor();
-    // resetReqMajor();
-    // setParam({
-    //   page: page,
-    //   count: sizePerPage,
-    //   setupid: "",
-    // })
     setActionType("add");
   }
 
@@ -130,10 +97,7 @@ export default function AdminReqEditForm(props) {
           file.push(urlConfig.urlBackend + "app/gerai/menu_photo/" + propsReq.id_menu + "/" + key.key)
           setFilePrev(urlConfig.urlBackend + "app/gerai/menu_photo/" + propsReq.id_menu + "/" + key.key)
         }
-      })
-      // setParam({...param,setupid:propsReq.id});
-      // setReqMajor({...reqMajor,setupid:propsReq.id});
-      // getCategory();      
+      })  
       setActionType("edit");
     }
   }, []);
@@ -145,24 +109,8 @@ export default function AdminReqEditForm(props) {
   },[apikey])
 
   useEffect(() => {
-    console.log(req); 
-    if(actionType === "edit"){                    
-      // getMajorSetup();
-    }
+    console.log(req);
   },[req])
-
-  useEffect(() => {
-    if(major.length > 0){
-      if(major.find((mq) => mq.setupquestion.length <= 0 || !mq.setupquestion)){      
-        setReq({...req, examstatus:'Inactive'});      
-        axios.post('/b/o/master/exam/setup/update',req).then(({data}) => {    
-          console.log(data)
-        }).catch(error => {
-          toast.error(Errormsg['500'], {containerId:"B", transition:Zoom});
-        })
-      }
-    }
-  },[major])  
   
   const getIdTipe = () => {
     let paramTipe = {
@@ -272,304 +220,6 @@ export default function AdminReqEditForm(props) {
       })
     }
   };
-
-  // const useEffectIf = (condition, fn) => {
-  //   useEffect(() => condition && fn(), [condition])
-  // }
-
-  const getPeriodReg = () => {
-    axios.post("/b/o/master/periodregister",JSON.stringify({
-      page: 1, count: 100
-    }))
-    .then((data)=>{      
-      // console.log(data);
-      if(data.data.st){
-        setPeriodReg(data.data.data.list);        
-        //console.log(periodReg)
-      }
-      else{
-        toast.error(data.data.msg,{containerId: "B", transition:Zoom});
-      }
-    })
-    .catch((error)=>{
-      toast.error(Errormsg[500],{containerId: "B", transition:Zoom });
-    })
-  }
-
-  const getCategory = () => {  
-    axios.post("/b/o/master/exam/categories",JSON.stringify({
-     page:1, count:100
-    }))
-    .then((data)=>{      
-      console.log(data)
-      if(data.data.st){
-        setCategory(data.data.data.list); 
-        // console.log(category);       
-      }
-      else{
-        toast.error(data.data.msg, {containerId:"B", transition:Zoom});
-      }
-    })
-    .catch((error)=>{
-      toast.error(Errormsg[500], {containerId:"B", transition:Zoom});
-    })
-  }
-
-  const getMajorSetup = () => {    
-    axios.post('app/gerai/tipe_menu',JSON.stringify(param))
-    .then(({data})=>{
-      if(data.st){
-        console.table(data.data.list);
-        setTotal(data.data.total);
-        data.data.list.forEach((dl, key) => {
-          if(!dl.setupquestion){
-            data.data.list[key].setupquestion = [];
-          }
-        })
-        setMajor(data.data.list);
-      }
-      else{
-        toast.error(data.msg,{containerId:"B", transition:Zoom});
-      }
-    }).catch(error => {
-      toast.error(Errormsg['500'],{containerId:"B", transition:Zoom})
-    })
-  }
-
-  const toggleAdd = (reqmajor) => {
-    resetCountQ();
-    resetReqMajor();
-    setMajorActionType("add");
-    let data= {
-      req : req,
-      reqMajor: reqMajor,
-      param: param,
-      major: major
-    }
-    if(reqmajor.hasOwnProperty('id')){
-      data.reqMajor = reqmajor
-      setReqMajor(reqmajor)
-      if(reqmajor.setupquestion.length > 0){
-        reqmajor.setupquestion.forEach((list,key)=>{
-          if(list.countquestion === 0 || list.categoryquestionid === "" || list.id === ""){
-            reqmajor.setupquestion.splice(key,1);
-          }
-        })
-      }      
-      setMajorActionType("edit");
-    }
-    setToAdd(!toAdd);
-    history.push('/master/ujian/setting/edit/jurusan', data);
-  };
-
-  const toggleDelete = (reqmajor) => {
-    setToDelete(!toDelete);
-    setSelectedReq(reqmajor)
-  };
-
-  const GetActionFormat = (cell, row) => {   
-    return (
-      <div>        
-        <Button color="primary" className="mr-2" size="sm" onClick={(e) => { e.stopPropagation(); toggleAdd(row) }}>
-          <FontAwesomeIcon icon={['fa', 'edit']} />
-        </Button>
-        <Button color="danger" className="mr-2" size="sm"         
-          onClick={(e) => {
-            e.stopPropagation();            
-            toggleDelete(row)
-          }}>
-          <FontAwesomeIcon icon={['fa', 'trash-alt']} />
-        </Button>        
-      </div>
-    );    
-  }
-
-  const innerColumns = [
-    {
-      dataField: 'categoryname',
-      text: 'Nama Kategori',
-    },
-    {
-      dataField: 'countquestion',
-      text: 'Jumlah Soal',      
-    },    
-  ];
-
-  const columns = [{
-    dataField: 'action',
-    text: 'Action',
-    formatter: GetActionFormat,
-    headerStyle: (column, colIndex) => {
-      return { width: '230px' };
-    }
-  }, {
-    dataField: 'major',
-    text: 'Jurusan'
-  }, {
-    dataField: 'countquestion',
-    text: 'Jumlah Pertanyaan'
-  }
-  ];  
-
-  const expandRow = {
-    onlyOneExpanding: true,
-    showExpandColumn: true,
-    renderer: (row) => {            
-      row.setupquestion.forEach((e,key) => {        
-        e.id
-      });
-      return (
-        <>
-          <BootstrapTable
-            keyField="id"
-            data={row.setupquestion}
-            columns={innerColumns}
-            noDataIndication="Tidak ada soal"
-            wrapperClasses="table-responsive"
-          />
-        </>
-      );      
-    }
-  };
-
-  const handleTableChange = (type, { page, sizePerPage }) => {
-    setParam((prevState) => ({
-      ...prevState,
-      page: page
-    }))
-  }
-
-  // const addMajorQuestion = () => {
-    //   let oldReq = reqMajor.setupquestion;    
-  //   oldReq.push({id:"", setupmajorid:reqMajor.id, categoryquestionid:"", countquestion:0});    
-  //   setReqMajor({ ...reqMajor, setupquestion: oldReq });
-  //   setCountQ(countQ + 1);
-  // }
-
-  // const deleteMajorQuestion = (index) => {
-  //   let oldReq = reqMajor.setupquestion;
-  //   if(majorActionType=="edit" && oldReq[index].id){
-  //     axios.post("/b/o/master/exam/setup/question/delete",JSON.stringify({
-  //       id:oldReq[index].id
-  //     })).then(({data})=>{
-  //       if (data.st) {
-  //         toast.success("Soal berhasil dihapus", {containerId:"B", transition:Zoom});          
-  //       }
-  //       else{
-  //         toast.error(data.msg, { containerId: 'B', transition: Zoom });  
-  //       }
-  //     }).catch((error) => {
-  //       toast.error(Errormsg['500'], { containerId: 'B', transition: Zoom });
-  //     })
-  //   }
-  //   if(countQ > 0){
-  //     setCountQ(countQ - 1);
-  //   }
-  //   oldReq.splice(index, 1);
-  //   setReqMajor({ ...reqMajor, setupquestion: oldReq });
-  // }
-
-  // const changeMajorQuestion = (field,index,value) =>{
-  //   let oldQuestion = reqMajor.setupquestion;
-  //   oldQuestion[index][field]= value;
-  //   console.log(oldQuestion)
-  //   setReqMajor({ ...reqMajor, setupquestion:oldQuestion });
-  // }
-
-  const deleteHandler = async () => {
-    toast.dismiss();
-    console.log(selectedReq);
-    try {
-      let res = await axios.post('/b/o/master/exam/setup/major/delete', JSON.stringify({
-        id: selectedReq.id
-      }))
-      console.log(res);
-      if (res.data.st) {        
-        getMajorSetup();
-        toggleDelete({});
-        toast.success("Jurusan ujian berhasil dihapus", { containerId: 'B', transition: Zoom });
-      } else {
-        toast.error(res.data.msg, { containerId: 'B', transition: Zoom });
-      }
-    } catch (error) {
-      toast.error(Errormsg['500'], { containerId: 'B', transition: Zoom });
-    }
-  }
-
-  const addHandler = async () => {
-    toast.dismiss();
-    let cekQuest = true;
-    for(let i=0; i<reqMajor.setupquestion.length; i++){
-      if(reqMajor.setupquestion[i].categoryquestionid == "" ||  reqMajor.setupquestion[i].countquestion == 0){
-        toast.error('Harap lengkapi pengaturan soal', { containerId: 'B', transition: Zoom });
-        cekQuest = false;
-        break
-      }
-    }
-    if(cekQuest){
-      if(reqMajor.countquestion == 0 || reqMajor.countquestion == '' || reqMajor.major == ''){
-        toast.error('Harap lengkapi data', { containerId: 'B', transition: Zoom });
-      }
-      else{        
-        let url = '/b/o/master/exam/setup/major/create';
-        let successMsg = 'Jurusan ujian berhasil ditambahkan';
-        if (majorActionType == 'edit') {
-          if(countQ>0){
-            console.log({...reqMajor.setupquestion[reqMajor.setupquestion.length-1]})
-            axios.post("/b/o/master/exam/setup/question/add",{...reqMajor.setupquestion[reqMajor.setupquestion.length-1]}).then(({data})=>{
-              if(data.st){
-                console.log(data);
-              }
-              else{
-                toast.error(data.msg, {containerId:"B", transition:Zoom});
-              }
-            }).catch((error) => {
-              toast.error(Errormsg['500'], { containerId: 'B', transition: Zoom });
-            })
-          }
-          url = '/b/o/master/exam/setup/major/update';          
-          successMsg = 'Jurusan ujian berhasil diubah';
-          axios.post(url, JSON.stringify(reqMajor)).then(({ data }) => {
-            if (data.sc == 200) {
-              if (data.st) {
-                toast.success(successMsg, { containerId: 'B', transition: Zoom });              
-                  toggleAdd({});
-                  getMajorSetup();                  
-              } else {
-                console.log("error");
-                toast.error(data.msg, { containerId: 'B', transition: Zoom });
-              }
-            }
-          }).catch((error) => {        
-            toast.error(Errormsg['500'], { containerId: 'B', transition: Zoom });
-          })
-        }
-        if(majorActionType=="add"){
-          // console.log(formData)
-          console.log(reqMajor);
-          axios.post(url, JSON.stringify(reqMajor)).then(({ data }) => {
-            if (data.sc == 200) {
-              if (data.st) {
-                toast.success(successMsg, { containerId: 'B', transition: Zoom });               
-                toggleAdd({});
-                getMajorSetup();                              
-              } else {
-                console.log("error");
-                toast.error(data.msg, { containerId: 'B', transition: Zoom });
-              }
-              // changeSubmitDisableState(false);
-              // setSubmited(false);
-            }
-            // console.log(res);
-          }).catch((error) => {        
-            toast.error(Errormsg['500'], { containerId: 'B', transition: Zoom });        
-            // setSubmited(false);
-            // changeSubmitDisableState(false);
-          })
-        }
-      }
-    }
-  }
 
   const addCommas = num => num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
   

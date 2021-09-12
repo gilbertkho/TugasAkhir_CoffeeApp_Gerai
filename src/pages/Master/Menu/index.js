@@ -33,8 +33,6 @@ export default function ListMenu() {
   });
 
   const [toDelete, setToDelete] = useState(false);
-  const [selected, setSelected] = useState({});
-  const [period, setPeriod] = useState([]);
   const toggleDelete = (user) => {
     setToDelete(!toDelete);
     setSelectedUser(user)
@@ -172,12 +170,6 @@ export default function ListMenu() {
     toast.dismiss();    
     axios.post('app/gerai/menu/delete', {id_menu: selectedUser.id_menu, apikey: apikey}).then(({data}) => {
         if (data.status) {
-          // if (page == 1) {
-          //   fetchData(1, sizePerPage);
-          // } else {
-          //   setPage(1);
-          // }
-          // setTotal(totalSize - 1)
           toast.success(data.msg, {containerId:"B", transition:Zoom});
           fetchData(param);
           toggleDelete({});

@@ -21,30 +21,18 @@ import Select, { Option } from 'rc-select';
 import LaddaButton from 'react-ladda/dist/LaddaButton';
 import getApiKey from 'config/getApiKey';
 
-export default function AdminReqEditForm(props) {
+export default function TipeMenuEditForm(props) {
   // const admin = props.location.state.admin;
   const history = useHistory();
   const [apikey, setApikey] = useState('')
-  const [toAdd, setToAdd] = useState(false);
-  const [toDelete, setToDelete] = useState(false);
-  // const [catSoal, setCatSoal] = useState([]);
-  let [page, setPage] = useState(1);
-  const sizePerPage = 100;
   const [req, setReq] = useState({ 
     id_tipe : "",
     nama_tipe: "",
     apikey: apikey,
   });
-  const [param, setParam] = useState({
-    page: page,
-    count: sizePerPage,
-    setupid: "",
-    apikey: apikey,
-  });
-  const [filePrev, setFilePrev] = useState("");
+ 
   const [actionType, setActionType] = useState("add");
   const [submited, setSubmited] = useState(false);
-  const [tipeMenu, setTipeMenu] = useState([]);
   const changeReq = (field, value) => { setReq({ ...req, [field]: value });};
   useEffect(()=>{
     console.log(req);
@@ -58,23 +46,9 @@ export default function AdminReqEditForm(props) {
 
   const [submitDisable, setSubmitDisable] = useState(false);  
   const changeSubmitDisableState = (value) => { setSubmitDisable(value) };
-  const changeRequirement = (field, index, value) => {
-    let oldReq = req.requirement;
-    oldReq[index][field] = value;
-    setReq({ ...req, requirement: oldReq });
-    // console.log(req);
-  };
 
   const resetForm = () => {
     resetReq();
-    // setFilePrev("");
-    // resetMajor();
-    // resetReqMajor();
-    // setParam({
-    //   page: page,
-    //   count: sizePerPage,
-    //   setupid: "",
-    // })
     setActionType("add");
   }
 
@@ -101,22 +75,13 @@ export default function AdminReqEditForm(props) {
             apikey: key.key
           });
         }
-      })
-      // setParam({...param,setupid:propsReq.id});
-      // setReqMajor({...reqMajor,setupid:propsReq.id});
-      // getCategory();
-      // let file = [];
-      // file.push(urlConfig.urlBackend + "app/gerai/menu_photo/" + propsReq.id_menu)
-      // setFilePrev(urlConfig.urlBackend + "app/gerai/menu_photo/" + propsReq.id_menu)
+      })      
       setActionType("edit");
     }
   }, []);
 
   useEffect(() => {
-    console.log(req); 
-    if(actionType === "edit"){                    
-      // getMajorSetup();
-    }
+    console.log(req);    
   },[req])
 
   const _onSubmit = (e) => {
@@ -134,24 +99,11 @@ export default function AdminReqEditForm(props) {
         url = '/app/gerai/tipemenu/update';
         successMsg = 'Tipe Menu berhasil diubah';
       }
-      // console.log(url);
-      // console.log(req)
       axios.post(url, req).then(({ data }) => {        
         if (data.status) {
           toast.success(successMsg, { containerId: 'B', transition: Zoom });
-          if (actionType == 'add') {
-            //reset form
-            // resetReq();
-            // console.log(data)
-            // "7ac6c7ec-5bc1-11eb-bbea-5347da316c9a"
-            setReq({...req, id_tipe:data.data})
-            // setParam({...param, setupid:data.data.id})
-            // setReqMajor({...reqMajor, setupid:data.data.id})
-            // axios.post("/b/o/master/exam/setup/id",{"id":data.data.id}).then(({data})=>{
-            //   console.log(data);                
-            // }).catch(error=>{
-            //   toast.error(Errormsg['500'], {containerId:"B", transition:Zoom})
-            // })
+          if (actionType == 'add') {            
+            setReq({...req, id_tipe:data.data})           
             setActionType('edit');
           } else {
             //return to list after timeout
@@ -194,16 +146,7 @@ export default function AdminReqEditForm(props) {
                 <Label for = "name">Nama Tipe</Label>
                 <Input id = "name" type = "text" value = {req.nama_tipe} onChange={(e) => changeReq("nama_tipe", e.target.value)} invalid={req.nama_tipe === '' && submited} />
                 <FormFeedback>Nama tidak boleh kosong</FormFeedback>
-              </FormGroup>              
-              {/* <FormGroup>
-                <Label for = "menustatus" className = "ml-4">
-                  <Input id = "menustatus" type = "checkbox" checked = {req.status_menu === "AKTIF" ? true : false} onChange = {() => {changeReq("status_menu", req.status_menu === "AKTIF" ? "NONAKTIF" : "AKTIF");}}
-                  // disabled = {major.length <=0 || major.find((mq) => mq.setupquestion.length <= 0 || !mq.setupquestion) ? true : false}
-                  />
-                  Status Tipe Menu Aktif
-                </Label>
-                <FormText color="primary">Jika aktif maka tipe menu akan ditampilkan pada aplikasi customer.</FormText>
-              </FormGroup>  */}              
+              </FormGroup>
               <hr />    
               <LaddaButton className="btn btn-primary"
                 style = {{ width: "100%", marginTop: "1rem" }}

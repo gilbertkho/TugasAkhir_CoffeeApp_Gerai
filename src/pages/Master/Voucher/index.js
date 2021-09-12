@@ -16,7 +16,7 @@ import { toast, Zoom } from 'react-toastify';
 import Errormsg from 'config/errormsg';
 import getApiKey from 'config/getApiKey';
 
-export default function ListPendaftar() {
+export default function ListVoucher() {
 
   const history = useHistory();
   const [apikey, setApikey] = useState('');

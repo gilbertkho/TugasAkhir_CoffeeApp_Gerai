@@ -22,15 +22,10 @@ import LaddaButton from 'react-ladda/dist/LaddaButton';
 import { parse } from '@fortawesome/fontawesome-svg-core';
 import getApiKey from 'config/getApiKey';
 
-export default function AdminReqEditForm(props) {
+export default function TaskEditForm(props) {
   // const admin = props.location.state.admin;
   const history = useHistory();
   const [apikey, setApikey] = useState('');
-  const [toAdd, setToAdd] = useState(false);
-  const [toDelete, setToDelete] = useState(false);
-  // const [catSoal, setCatSoal] = useState([]);
-  let [page, setPage] = useState(1);
-  const sizePerPage = 100;
   const [req, setReq] = useState({ 
     id_voucher: "",
     id_task: "",
@@ -41,19 +36,28 @@ export default function AdminReqEditForm(props) {
     status_task: "NONAKTIF",
     apikey: apikey,
   });
-  const [param, setParam] = useState({
-    page: page,
-    count: sizePerPage,
-    setupid: "",
-  });
+
   const [filePrev, setFilePrev] = useState("");
   const [actionType, setActionType] = useState("add");
   const [submited, setSubmited] = useState(false);
   const [voucher, setVoucher] = useState([]);
-  const changeReq = (field, value) => { setReq({ ...req, [field]: value });};
-  useEffect(()=>{
-    console.log(req);
-  },[req]);
+  const changeReq = (field, value) => {
+    if(field === 'id_voucher'){            
+      let idx = voucher.findIndex((vc) => 
+          vc.id_voucher === value
+      )      
+      setReq({
+        ...req, 
+        'id_voucher': value,
+        'time_start': moment(voucher[idx].time_start).format('yyyy-MM-DD'),
+        'time_end': moment(voucher[idx].time_end).format('yyyy-MM-DD'),
+        'kuota_task': voucher[idx].kuota_voucher
+      })      
+    }
+    else{
+      setReq({ ...req, [field]: value });
+    }
+  };
   const resetReq = () => { setReq({ 
     id_voucher: "",
     id_task: "",
@@ -66,50 +70,17 @@ export default function AdminReqEditForm(props) {
     })
   };
 
-  let [totalSize, setTotal] = useState(0);
-  const [major, setMajor] = useState([]);
-  const [reqMajor, setReqMajor] = useState({id:"",  setupid:"", major:"", countquestion:0, setupquestion:[]});
-  const [selectedReq, setSelectedReq] = useState({});
-  const changeReqMajor = (field, value) => { setReqMajor({ ...reqMajor,[field]: value}); };
-  const [majorActionType, setMajorActionType] = useState("add");  
   const [submitDisable, setSubmitDisable] = useState(false);
-  const [periodReg, setPeriodReg] = useState([]);
-  const [category, setCategory] = useState([]);
-  const resetMajor = () => { setMajor([]) }
-  const [countQ, setCountQ] = useState(0);
-  const resetCountQ = () => { setCountQ(0) };
-  const resetReqMajor = () => { setReqMajor({id:"",  setupid: param.setupid, major:"", countquestion:"", setupquestion:[] })};
   const changeSubmitDisableState = (value) => { setSubmitDisable(value) };
-  const changeRequirement = (field, index, value) => {
-    let oldReq = req.requirement;
-    oldReq[index][field] = value;
-    setReq({ ...req, requirement: oldReq });
-    // console.log(req);
-  };
 
   const resetForm = () => {
     resetReq();
     setFilePrev("");
-    // resetMajor();
-    // resetReqMajor();
-    // setParam({
-    //   page: page,
-    //   count: sizePerPage,
-    //   setupid: "",
-    // })
     setActionType("add");
   }
 
-  useEffect(() => {
-    // getPeriodReg();
-    resetForm();
-    // getIdVoucher();
-    // getApiKey().then((key) => {
-    //   if(key.status){
-    //     setApikey(key.key)
-    //     setReq({...req, apikey: key.key})
-    //   }
-    // })
+  useEffect(() => {  
+    resetForm(); 
     getApiKey().then((key) => {
       if(key.status){
         setApikey(key.key);
@@ -137,28 +108,11 @@ export default function AdminReqEditForm(props) {
           });
         }
       }
-    })
-      // setParam({...param,setupid:propsReq.id});
-      // setReqMajor({...reqMajor,setupid:propsReq.id});
-      // getCategory();
-      // let file = [];
-      // file.push(urlConfig.urlBackend + "app/gerai/menu_photo/" + propsReq.id_menu)
-      // setFilePrev(urlConfig.urlBackend + "app/gerai/menu_photo/" + propsReq.id_menu)          
+    })           
   }, []);
-  
-  useEffect(() => {
-    console.log(reqMajor)
-  },[reqMajor])
-  
-  useEffect(() => {
-    console.table(category)
-  },[category])
 
   useEffect(() => {
-    console.log(req); 
-    if(actionType === "edit"){                    
-      // getMajorSetup();
-    }
+    console.log(req);    
   },[req])
   
   useEffect(() => {
@@ -179,7 +133,7 @@ export default function AdminReqEditForm(props) {
     axios.post("/app/gerai/voucher", paramTipe).then(({data}) => {
       console.log(data)
       if(data.status){
-        setVoucher(data.data)
+        setVoucher(data.data);
       }
       else{
         toast.error(data.msg, {containerId: "B", transition: Zoom})
@@ -217,7 +171,7 @@ export default function AdminReqEditForm(props) {
         url = '/app/gerai/task/update';
         successMsg = 'Task berhasil diubah';
       }
-      console.log('REQ: ',req)
+      // console.log('REQ: ',req)
       axios.post(url, req).then(({ data }) => {        
         if (data.status) {
           toast.success(successMsg, { containerId: 'B', transition: Zoom });
@@ -248,37 +202,6 @@ export default function AdminReqEditForm(props) {
         changeSubmitDisableState(false);
       })
     }
-  };
-
-  const toggleAdd = (reqmajor) => {
-    resetCountQ();
-    resetReqMajor();
-    setMajorActionType("add");
-    let data= {
-      req : req,
-      reqMajor: reqMajor,
-      param: param,
-      major: major
-    }
-    if(reqmajor.hasOwnProperty('id')){
-      data.reqMajor = reqmajor
-      setReqMajor(reqmajor)
-      if(reqmajor.setupquestion.length > 0){
-        reqmajor.setupquestion.forEach((list,key)=>{
-          if(list.countquestion === 0 || list.categoryquestionid === "" || list.id === ""){
-            reqmajor.setupquestion.splice(key,1);
-          }
-        })
-      }      
-      setMajorActionType("edit");
-    }
-    setToAdd(!toAdd);
-    history.push('/master/ujian/setting/edit/jurusan', data);
-  };
-
-  const toggleDelete = (reqmajor) => {
-    setToDelete(!toDelete);
-    setSelectedReq(reqmajor)
   };
 
   const addCommas = num => num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
@@ -327,11 +250,12 @@ export default function AdminReqEditForm(props) {
               <FormGroup>
                 <Label for = "kuota">Kuota Task</Label>
                 <Input id = "kuota" type = "text" value = {addCommas(req.kuota_task)} onChange={(e) => changeReq("kuota_task", removeNonNumeric(e.target.value))} invalid={(req.kuota_task === '' || parseInt(req.kuota_task) === 0) && submited} />
+                <FormText color="primary">Harap pastikan jumlah kuota sesuai dengan jumlah kuota voucher yang dipilih</FormText>
                 <FormFeedback>Harap mengisi jumlah kuota</FormFeedback>
               </FormGroup>
               <FormGroup>
                 <Label for = "timestart">Tanggal Berlaku</Label>
-                <Input id = "timestart" type = "date"                 
+                <Input id = "timestart" type = "date" disabled                
                 value={req.time_start}
                 onChange = {(e) => changeReq("time_start", e.target.value)} 
                 invalid = {req.time_start === '' && submited}/>
@@ -339,10 +263,11 @@ export default function AdminReqEditForm(props) {
               </FormGroup>
               <FormGroup>
                 <Label for = "timeend">Tanggal Berakhir</Label>
-                <Input id = "timeend" type = "date"                                 
+                <Input id = "timeend" type = "date" disabled                             
                 value={req.time_end}
                 onChange = {(e) => changeReq("time_end", e.target.value)} 
                 invalid = {req.time_end === '' && submited}/>
+                <FormText color="primary">Tanggal berlaku dan berakhir task diatur sesuai dengan data voucher yang dipilih</FormText>
                 <FormFeedback>Tanggal Berakhir tidak boleh kosong</FormFeedback>
               </FormGroup>
               <FormGroup>
