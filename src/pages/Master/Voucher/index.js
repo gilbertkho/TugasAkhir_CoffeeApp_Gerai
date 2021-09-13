@@ -33,8 +33,6 @@ export default function ListVoucher() {
   });
 
   const [toDelete, setToDelete] = useState(false);
-  const [selected, setSelected] = useState({});
-  const [period, setPeriod] = useState([]);
   const toggleDelete = (user) => {
     setToDelete(!toDelete);
     setSelectedUser(user)

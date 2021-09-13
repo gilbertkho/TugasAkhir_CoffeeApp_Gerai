@@ -81,9 +81,9 @@ export default function PageRegister(){
     }
   },[reg.kecamatan])
   
-  useEffect(() => {
-    console.log(reg)
-  }, [reg]);
+  // useEffect(() => {
+  //   console.log(reg)
+  // }, [reg]);
 
   const changeReg = (field, value) => { setReg({ ...reg, [field]: value }); };
 
@@ -110,7 +110,7 @@ export default function PageRegister(){
 
   const sendVerification = () => {
     axios.post('/app/gerai/verify/request',{
-      email: this.state.email
+      email: reg.email
     }).then(({data}) => {
       if(data.status){
         toast.success(data.msg, {containerId:'B', transition:Zoom});
@@ -119,11 +119,11 @@ export default function PageRegister(){
         toast.error(data.msg, {containerId:'B', transition:Zoom});
       }
     }).catch((error) => {
-      if(error.response.status != 500){
-        toast.error(error.response.data.msg, {containerId:'B', transition: Zoom});
-      }
-      else{
-        toast.error(Errormsg['500'], {containerId: 'B', transition: Zoom});
+      console.log(error);
+      if (error.response.status !== 500) {
+        toast.error(error.response.data.msg, {containerId: "B", transition: Zoom });
+      } else {
+        toast.error(Errormsg['500'], { containerId: 'B', transition: Zoom });
       }
     })
   }
@@ -158,11 +158,12 @@ export default function PageRegister(){
         }
       }).catch(error => {
         setSubmitted(false);
-        let msg = error.response.data.msg;
-        console.log(error.response.data)
-        console.log(error.response.status)
+        console.log(error);
+        // let msg = error.response.data.msg;
+        // console.log(error.response.data)
+        // console.log(error.response.status)
         if (error.response.status !== 500) {
-          toast.error(msg, {containerId: "B", transition: Zoom });
+          toast.error(error.response.data.msg, {containerId: "B", transition: Zoom });
         } else {
           toast.error(Errormsg['500'], { containerId: 'B', transition: Zoom });
         }

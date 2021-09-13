@@ -160,6 +160,7 @@ class dashboard extends React.Component {
             toast.error(data.msg , {containerId:"B", transition:Zoom})
           }      
         }).catch(error => {
+          console.log(error);
           if(error.response.status != 500){
             this.setState({paid: 'NO', order_id: '',onGoing: {}})
             toast.error(error.response.data.msg, {containerId:'B', transition: Zoom});

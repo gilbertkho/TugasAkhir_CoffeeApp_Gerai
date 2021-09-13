@@ -24,15 +24,11 @@ import LaddaButton from 'react-ladda/dist/LaddaButton';
 export default function AdminReqEditForm(props) {
   // const admin = props.location.state.admin;
   const history = useHistory();
-  const [toAdd, setToAdd] = useState(false);
-  const [toDelete, setToDelete] = useState(false);
   const [apikey, setApikey] = useState('');
-  // const [catSoal, setCatSoal] = useState([]);
-  let [page, setPage] = useState(1);
-  const sizePerPage = 100;
   const [req, setReq] = useState({ 
     id_pesanan: "",        
     id_voucher: "",
+    id_customer: "",
     nama_pelanggan: "",
     catatan_tambahan: "",
     status_pesanan: "",
@@ -44,15 +40,10 @@ export default function AdminReqEditForm(props) {
     detail: [],
     apikey: apikey,
   });
-  const [param, setParam] = useState({
-    page: page,
-    count: sizePerPage,
-    setupid: "",
-  });
+  
   const [filePrev, setFilePrev] = useState("");
   const [actionType, setActionType] = useState("add");
   const [submited, setSubmited] = useState(false);
-  const [tipeMenu, setTipeMenu] = useState([]);
   const [delivery, setDelivery] = useState({});
   const changeReq = (field, value) => { setReq({ ...req, [field]: value });};
   useEffect(()=>{
@@ -61,6 +52,7 @@ export default function AdminReqEditForm(props) {
   const resetReq = () => { setReq({ 
     id_pesanan: "",        
     id_voucher: "",
+    id_customer: "",
     nama_pelanggan: "",
     catatan_tambahan: "",
     status_pesanan: "",
@@ -74,37 +66,14 @@ export default function AdminReqEditForm(props) {
     })
   };
 
-  let [totalSize, setTotal] = useState(0);
-  const [major, setMajor] = useState([]);
   const [reqMajor, setReqMajor] = useState({id:"",  setupid:"", major:"", countquestion:0, setupquestion:[]});
-  const [selectedReq, setSelectedReq] = useState({});
-  const changeReqMajor = (field, value) => { setReqMajor({ ...reqMajor,[field]: value}); };
-  const [majorActionType, setMajorActionType] = useState("add");  
   const [submitDisable, setSubmitDisable] = useState(false);
-  const [periodReg, setPeriodReg] = useState([]);
   const [category, setCategory] = useState([]);
-  const resetMajor = () => { setMajor([]) }
-  const [countQ, setCountQ] = useState(0);
-  const resetCountQ = () => { setCountQ(0) };
-  const resetReqMajor = () => { setReqMajor({id:"",  setupid: param.setupid, major:"", countquestion:"", setupquestion:[] })};
   const changeSubmitDisableState = (value) => { setSubmitDisable(value) };
-  const changeRequirement = (field, index, value) => {
-    let oldReq = req.requirement;
-    oldReq[index][field] = value;
-    setReq({ ...req, requirement: oldReq });
-    // console.log(req);
-  };
 
   const resetForm = () => {
     resetReq();
     setFilePrev("");
-    // resetMajor();
-    // resetReqMajor();
-    // setParam({
-    //   page: page,
-    //   count: sizePerPage,
-    //   setupid: "",
-    // })
     setActionType("add");
   }
 
@@ -119,8 +88,9 @@ export default function AdminReqEditForm(props) {
           setApikey(key.key)
           setReq({...req,
             id_pesanan: propsReq.id_pesanan,
-            tgl_pesanan: propsReq.tgl_pesanan,
             id_voucher: propsReq.id_voucher,
+            id_customer: propsReq.id_customer,
+            tgl_pesanan: propsReq.tgl_pesanan,
             nama_pelanggan: propsReq.nama_pelanggan,
             catatan_tambahan: propsReq.catatan_tambahan,
             status_pesanan: propsReq.status_pesanan,
@@ -132,24 +102,7 @@ export default function AdminReqEditForm(props) {
             apikey: key.key
           })
         }
-      });
-      // setReq({
-      //   ...req,
-      //   id_pesanan: propsReq.id_pesanan,
-      //   tgl_pesanan: propsReq.tgl_pesanan,
-      //   id_voucher: propsReq.id_voucher,
-      //   nama_pelanggan: propsReq.nama_pelanggan,
-      //   catatan_tambahan: propsReq.catatan_tambahan,
-      //   status_pesanan: propsReq.status_pesanan,
-      //   tipe_pengambilan: propsReq.tipe_pengambilan,
-      //   biaya_delivery: propsReq.biaya_delivery,
-      //   total_harga: propsReq.total_harga,
-      //   total_pesanan: propsReq.total_pesanan,
-      //   detail: propsReq.detail,
-      // });
-      // setParam({...param,setupid:propsReq.id});
-      // setReqMajor({...reqMajor,setupid:propsReq.id});
-      // getCategory();
+      });      
       let file = [];
       file.push(urlConfig.urlBackend + "app/gerai/menu_photo/" + propsReq.id_menu)
       setFilePrev(urlConfig.urlBackend + "app/gerai/menu_photo/" + propsReq.id_menu)
@@ -249,109 +202,6 @@ export default function AdminReqEditForm(props) {
         changeSubmitDisableState(false);
       })    
   };
-
-  const toggleAdd = (reqmajor) => {
-    resetCountQ();
-    resetReqMajor();
-    setMajorActionType("add");
-    let data= {
-      req : req,
-      reqMajor: reqMajor,
-      param: param,
-      major: major
-    }
-    if(reqmajor.hasOwnProperty('id')){
-      data.reqMajor = reqmajor
-      setReqMajor(reqmajor)
-      if(reqmajor.setupquestion.length > 0){
-        reqmajor.setupquestion.forEach((list,key)=>{
-          if(list.countquestion === 0 || list.categoryquestionid === "" || list.id === ""){
-            reqmajor.setupquestion.splice(key,1);
-          }
-        })
-      }      
-      setMajorActionType("edit");
-    }
-    setToAdd(!toAdd);
-    history.push('/master/ujian/setting/edit/jurusan', data);
-  };
-
-  const toggleDelete = (reqmajor) => {
-    setToDelete(!toDelete);
-    setSelectedReq(reqmajor)
-  };
-
-  const GetActionFormat = (cell, row) => {   
-    return (
-      <div>        
-        <Button color="primary" className="mr-2" size="sm" onClick={(e) => { e.stopPropagation(); toggleAdd(row) }}>
-          <FontAwesomeIcon icon={['fa', 'edit']} />
-        </Button>
-        <Button color="danger" className="mr-2" size="sm"         
-          onClick={(e) => {
-            e.stopPropagation();            
-            toggleDelete(row)
-          }}>
-          <FontAwesomeIcon icon={['fa', 'trash-alt']} />
-        </Button>        
-      </div>
-    );    
-  }
-
-  const innerColumns = [
-    {
-      dataField: 'categoryname',
-      text: 'Nama Kategori',
-    },
-    {
-      dataField: 'countquestion',
-      text: 'Jumlah Soal',      
-    },    
-  ];
-
-  const columns = [{
-    dataField: 'action',
-    text: 'Action',
-    formatter: GetActionFormat,
-    headerStyle: (column, colIndex) => {
-      return { width: '230px' };
-    }
-  }, {
-    dataField: 'major',
-    text: 'Jurusan'
-  }, {
-    dataField: 'countquestion',
-    text: 'Jumlah Pertanyaan'
-  }
-  ];  
-
-  const expandRow = {
-    onlyOneExpanding: true,
-    showExpandColumn: true,
-    renderer: (row) => {            
-      row.setupquestion.forEach((e,key) => {        
-        e.id
-      });
-      return (
-        <>
-          <BootstrapTable
-            keyField="id"
-            data={row.setupquestion}
-            columns={innerColumns}
-            noDataIndication="Tidak ada soal"
-            wrapperClasses="table-responsive"
-          />
-        </>
-      );      
-    }
-  };
-
-  const handleTableChange = (type, { page, sizePerPage }) => {
-    setParam((prevState) => ({
-      ...prevState,
-      page: page
-    }))
-  }
 
   const addCommas = num => num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
   

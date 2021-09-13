@@ -85,8 +85,7 @@ export default function TaskEditForm(props) {
       if(key.status){
         setApikey(key.key);
         if (props.location.state && props.location.state.user) {
-            let propsReq = props.location.state.user;
-            console.log('INI KEY1 ',key.key);
+            let propsReq = props.location.state.user;            
             setReq({
               ...req,
               id_voucher: propsReq.id_voucher,
@@ -100,8 +99,7 @@ export default function TaskEditForm(props) {
             });
             setActionType("edit");
         }
-        else{
-          console.log('INI KEY2 ',key.key);
+        else{          
           setReq({
             ...req,
             apikey: key.key
@@ -115,8 +113,7 @@ export default function TaskEditForm(props) {
     console.log(req);    
   },[req])
   
-  useEffect(() => {
-    console.log('CON ', apikey)
+  useEffect(() => {    
     if(apikey !== ''){
       getIdVoucher();
     }
