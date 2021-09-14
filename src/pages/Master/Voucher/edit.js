@@ -316,12 +316,12 @@ export default function VoucherEditForm(props) {
                 <FormFeedback>Minimal pembayaran tidak boleh kosong</FormFeedback>
               </FormGroup>
               <FormGroup>
-                <Label for = "discount">Jumlah Diskon</Label>
+                <Label for = "discount">Jumlah Diskon % </Label>
                 <Input id = "discount" type = "text" value = {addCommas(req.discount_value)} onChange={(e) => changeReq("discount_value", removeNonNumeric(e.target.value))} invalid = {((!req.discount_value && !req.value_voucher && submited) || (parseInt(req.discount_value) === 0 && parseInt(req.value_voucher) === 0) && submited)}/>
                 <FormFeedback>Harap mengisi jumlah diskon</FormFeedback>
               </FormGroup>
               <FormGroup>
-                <Label for = "value">Nilai Voucher / Jumlah Diskon Maksimal</Label>
+                <Label for = "value">Nilai Voucher / Jumlah Potongan Maksimal</Label>
                 <Input id = "value" type = "text" value = {addCommas(req.value_voucher)} onChange={(e) => changeReq("value_voucher", removeNonNumeric(e.target.value))} invalid = {((!req.discount_value && !req.value_voucher && submited) || (parseInt(req.discount_value) === 0 && parseInt(req.value_voucher) === 0) && submited)}/>
                 <FormFeedback>Harap mengisi nilai voucher</FormFeedback>
               </FormGroup>
