@@ -224,16 +224,16 @@ export default function ChatList(props) {
 
   const saveOpenHour = () => {
     let checkOpen =  false;
-    for(let i = 0; i < req.length; i++){
-      if(!req[i].open ||!req[i].close){
-        checkOpen = true;
-        i =  req.length;
-      }
-    }
-    if(checkOpen){
-      toast.error('Harap lengkapi semua pengisian jam operasi.', {containerId:'B', transition:Zoom});
-    }
-    else{
+    // for(let i = 0; i < req.length; i++){
+    //   if(!req[i].open ||!req[i].close){
+    //     checkOpen = true;
+    //     i =  req.length;
+    //   }
+    // }
+    // if(checkOpen){
+    //   toast.error('Harap lengkapi semua pengisian jam operasi.', {containerId:'B', transition:Zoom});
+    // }
+    // else{
       axios.post('/app/gerai/openhour/save',{
         openhour: JSON.stringify(req),
         apikey: apikey
@@ -253,7 +253,7 @@ export default function ChatList(props) {
           toast.error(Errormsg['500'], {containerId: 'B', transition: Zoom});
         }
       })
-    }
+    // }
   }
 
   const getMerchantOpenStatus = () => {
