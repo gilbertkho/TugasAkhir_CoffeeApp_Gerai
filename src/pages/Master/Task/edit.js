@@ -252,7 +252,7 @@ export default function TaskEditForm(props) {
               </FormGroup>
               <FormGroup>
                 <Label for = "timestart">Tanggal Berlaku</Label>
-                <Input id = "timestart" type = "date" disabled                
+                <Input id = "timestart" type = "date" 
                 value={req.time_start}
                 onChange = {(e) => changeReq("time_start", e.target.value)} 
                 invalid = {req.time_start === '' && submited}/>
@@ -260,7 +260,7 @@ export default function TaskEditForm(props) {
               </FormGroup>
               <FormGroup>
                 <Label for = "timeend">Tanggal Berakhir</Label>
-                <Input id = "timeend" type = "date" disabled                             
+                <Input id = "timeend" type = "date" 
                 value={req.time_end}
                 onChange = {(e) => changeReq("time_end", e.target.value)} 
                 invalid = {req.time_end === '' && submited}/>
